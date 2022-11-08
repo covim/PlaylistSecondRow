@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wifi.PlayListEditor.UI", "Wifi.PlayListEditor.UI\Wifi.PlayListEditor.UI.csproj", "{07AF90CB-471C-4935-9BDF-69E9C85EBC23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wifi.PlayListEditor.Types", "Wifi.PlayListEditor.Types\Wifi.PlayListEditor.Types.csproj", "{25F59E2A-BF88-44E5-BC43-F69A0B90286F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wifi.PlayListEditor.Items", "Wifi.PlayListEditor.Items\Wifi.PlayListEditor.Items.csproj", "{334AEF69-1F0A-447E-ACA6-61D7AC953619}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wifi.PlayListEditor.Types.Test", "Wifi.PlayListEditor.Types.Test\Wifi.PlayListEditor.Types.Test.csproj", "{DF2F6F37-DF3E-4A6D-9CF9-BD5E1FDA672D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07AF90CB-471C-4935-9BDF-69E9C85EBC23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07AF90CB-471C-4935-9BDF-69E9C85EBC23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07AF90CB-471C-4935-9BDF-69E9C85EBC23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07AF90CB-471C-4935-9BDF-69E9C85EBC23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25F59E2A-BF88-44E5-BC43-F69A0B90286F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25F59E2A-BF88-44E5-BC43-F69A0B90286F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25F59E2A-BF88-44E5-BC43-F69A0B90286F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25F59E2A-BF88-44E5-BC43-F69A0B90286F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{334AEF69-1F0A-447E-ACA6-61D7AC953619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{334AEF69-1F0A-447E-ACA6-61D7AC953619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{334AEF69-1F0A-447E-ACA6-61D7AC953619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{334AEF69-1F0A-447E-ACA6-61D7AC953619}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF2F6F37-DF3E-4A6D-9CF9-BD5E1FDA672D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF2F6F37-DF3E-4A6D-9CF9-BD5E1FDA672D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF2F6F37-DF3E-4A6D-9CF9-BD5E1FDA672D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF2F6F37-DF3E-4A6D-9CF9-BD5E1FDA672D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD5D39E0-5998-44F3-8006-1E685877D279}
+	EndGlobalSection
+EndGlobal

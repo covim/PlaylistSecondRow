@@ -19,6 +19,13 @@ namespace Wifi.PlayListEditor.Types.Test
 
         }
 
+
+        [TearDown]
+        public void Cleanup()
+        {
+            
+        }
+
         [Test]
         public void AdditionOfIntValues()
         {

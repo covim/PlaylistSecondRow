@@ -318,8 +318,6 @@ namespace Wifi.PlayListEditor.Types.Test
         public void ctor_Test()
         {
             //arrange
-
-
             //act
             _fixture = new Playlist("Liederliste", "Hans");
 

@@ -16,7 +16,12 @@ namespace Wifi.PlayListEditor.Repositories
     {
         private string _extension = ".m3u";
         private string _description;
-        private m3uParser.Model.Extm3u _m3uFileContent;
+        //private m3uParser.Model.Extm3u _m3uFileContent;
+
+        public M3URepository(string description) 
+        {
+            _description = description;
+        }
 
         public string Extension
         {

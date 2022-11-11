@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wifi.PlayListEditor.Types;
+using Wifi.PlayListEditor.Items;
 using m3uParser;
 using System.Web;
 using System.Runtime.CompilerServices;
 using System.IO;
-//using M3U;
+
 
 namespace Wifi.PlayListEditor.Repositories
 {
@@ -16,7 +17,7 @@ namespace Wifi.PlayListEditor.Repositories
     {
         private string _extension = ".m3u";
         private string _description;
-        //private m3uParser.Model.Extm3u _m3uFileContent;
+        
 
         public M3URepository(string description) 
         {
@@ -37,7 +38,21 @@ namespace Wifi.PlayListEditor.Repositories
 
         public IPlaylist Load(string playlistFilePath)
         {
-            throw new NotImplementedException();
+            //todo: abfrage auf .extension
+            if (!playlistFilePath.EndsWith(".m3u") || playlistFilePath == null)
+            {
+                return null;
+            }
+
+            var returnList = new Playlist("FromFile", "unknown");
+            var m3u = M3U.ParseFromFile(playlistFilePath);
+            foreach (var media in m3u.Medias)
+            {
+                var playlistItem = new Mp3Item(media.MediaFile);
+                returnList.Add(playlistItem);
+            }
+
+            return returnList;
         }
 
         public void Save(IPlaylist playlist, string playlistFilePath)
@@ -47,7 +62,7 @@ namespace Wifi.PlayListEditor.Repositories
             {
                 foreach (var item in playlist.ItemList)
                 {
-                    saveString += $"#EXINF:{item.Duration.TotalSeconds.ToString()},{item.Artist} - {item.Title}\n";
+                    saveString += $"#EXTINF:{item.Duration.TotalSeconds.ToString()},{item.Artist} - {item.Title}\n";
                     saveString += $"{item.Path}\n";
                 }
                 sw.WriteLine(saveString);

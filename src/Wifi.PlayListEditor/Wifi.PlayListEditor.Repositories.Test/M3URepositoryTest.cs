@@ -31,7 +31,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             mockedItem1.Setup(x => x.Title).Returns("Pete");
             mockedItem1.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(123));
             mockedItem1.Setup(x => x.Path).Returns("c:\\testlied1");
-            string sollString = "#EXTM3U\n#EXINF:123,David - Pete\nc:\\testlied1\n#EXINF:456,David - Pete\nc:\\testlied2\n\r\n";
+            string sollString = "#EXTM3U\n#EXTINF:123,David - Pete\nc:\\testlied1\n#EXTINF:456,David - Pete\nc:\\testlied2\n\r\n";
 
 
             var mockedItem2 = new Mock<IPlaylistItem>();
@@ -40,7 +40,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             mockedItem2.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(456));
             mockedItem2.Setup(x => x.Path).Returns("c:\\testlied2");
 
-            Playlist newPlaylist = new Playlist("SuperHits", "MoorMann");
+            var newPlaylist = new Playlist("SuperHits", "MoorMann");
             newPlaylist.Add(mockedItem1.Object);
             newPlaylist.Add(mockedItem2.Object);
 
@@ -48,9 +48,19 @@ namespace Wifi.PlayListEditor.Repositories.Test
             _fixture.Save(newPlaylist, "C:/temp/liste.m3u");
 
             //asssert
-            //string sr = File.ReadAllText("C:/temp/liste.m3u");
-            Assert.That(File.ReadAllText("C:/temp/liste.m3u"), Is.EqualTo(sollString)); //macht keinen sinn will nur mal sehen ob der Test läuft
+            Assert.That(File.ReadAllText("C:/temp/liste.m3u"), Is.EqualTo(sollString));
 
+        }
+
+        [Test]
+        public void LoadTest()
+        {
+            //arrange
+            IPlaylist resultPlayList;
+            //act
+            resultPlayList = _fixture.Load("C:/temp/liste_Load.m3u");
+            //assert
+            Assert.That(resultPlayList.ItemList.Count, Is.EqualTo(2));
         }
     }
 }

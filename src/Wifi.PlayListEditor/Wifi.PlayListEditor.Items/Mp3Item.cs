@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wifi.PlayListEditor.Types;
+using Wifi.PlayListEditor.Items;
 using System.Drawing;
 using System.IO;
 

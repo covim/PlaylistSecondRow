@@ -45,15 +45,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Wifi.PlayListEditor.Items\Wifi.PlayListEditor.Items.csproj">
+      <Project>{334aef69-1f0a-447e-aca6-61d7ac953619}</Project>
+      <Name>Wifi.PlayListEditor.Items</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wifi.PlayListEditor.Types\Wifi.PlayListEditor.Types.csproj">
       <Project>{25f59e2a-bf88-44e5-bc43-f69a0b90286f}</Project>
       <Name>Wifi.PlayListEditor.Types</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="M3U.NET">
-      <Version>1.0.0.3</Version>
-    </PackageReference>
     <PackageReference Include="m3uParser.NET">
       <Version>1.0.17</Version>
     </PackageReference>

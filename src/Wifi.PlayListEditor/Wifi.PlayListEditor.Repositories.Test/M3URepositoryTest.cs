@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
@@ -28,24 +30,26 @@ namespace Wifi.PlayListEditor.Repositories.Test
             mockedItem1.Setup(x => x.Artist).Returns("David");
             mockedItem1.Setup(x => x.Title).Returns("Pete");
             mockedItem1.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(123));
-            mockedItem1.Setup(x => x.Path).Returns("c:/testlied1");
+            mockedItem1.Setup(x => x.Path).Returns("c:\\testlied1");
+            string sollString = "#EXTM3U\n#EXINF:123,David - Pete\nc:\\testlied1\n#EXINF:456,David - Pete\nc:\\testlied2\n\r\n";
 
 
             var mockedItem2 = new Mock<IPlaylistItem>();
             mockedItem2.Setup(x => x.Artist).Returns("David");
             mockedItem2.Setup(x => x.Title).Returns("Pete");
-            mockedItem1.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(456));
-            mockedItem1.Setup(x => x.Path).Returns("c:/testlied2");
+            mockedItem2.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(456));
+            mockedItem2.Setup(x => x.Path).Returns("c:\\testlied2");
 
             Playlist newPlaylist = new Playlist("SuperHits", "MoorMann");
             newPlaylist.Add(mockedItem1.Object);
             newPlaylist.Add(mockedItem2.Object);
 
             //act
-            _fixture.Save(newPlaylist, "C:\\temp");
+            _fixture.Save(newPlaylist, "C:/temp/liste.m3u");
 
             //asssert
-            Assert.That(1, Is.EqualTo(1)); //macht keinen sinn will nur mal sehen ob der Test läuft
+            //string sr = File.ReadAllText("C:/temp/liste.m3u");
+            Assert.That(File.ReadAllText("C:/temp/liste.m3u"), Is.EqualTo(sollString)); //macht keinen sinn will nur mal sehen ob der Test läuft
 
         }
     }

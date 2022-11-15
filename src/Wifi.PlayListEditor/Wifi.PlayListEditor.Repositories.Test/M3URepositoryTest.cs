@@ -30,15 +30,15 @@ namespace Wifi.PlayListEditor.Repositories.Test
             mockedItem1.Setup(x => x.Artist).Returns("David");
             mockedItem1.Setup(x => x.Title).Returns("Pete");
             mockedItem1.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(123));
-            mockedItem1.Setup(x => x.Path).Returns("c:\\testlied1");
-            string sollString = "#EXTM3U\n#EXTINF:123,David - Pete\nc:\\testlied1\n#EXTINF:456,David - Pete\nc:\\testlied2\n\r\n";
+            mockedItem1.Setup(x => x.Path).Returns("c:\\testlied1.mp3");
+            string sollString = "#EXTM3U\n#EXTINF:123,David - Pete\nc:\\testlied1.mp3\n#EXTINF:456,David - Pete\nc:\\testlied2.mp3\n\r\n";
 
 
             var mockedItem2 = new Mock<IPlaylistItem>();
             mockedItem2.Setup(x => x.Artist).Returns("David");
             mockedItem2.Setup(x => x.Title).Returns("Pete");
             mockedItem2.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(456));
-            mockedItem2.Setup(x => x.Path).Returns("c:\\testlied2");
+            mockedItem2.Setup(x => x.Path).Returns("c:\\testlied2.mp3");
 
             var newPlaylist = new Playlist("SuperHits", "MoorMann");
             newPlaylist.Add(mockedItem1.Object);

@@ -15,10 +15,10 @@ namespace Wifi.PlayListEditor.Types
         private List<IPlaylistItem> _itemList;
         private bool _allowDuplicates;
 
+
         public Playlist(string name, string author) : this(name, author, DateTime.Now)
         {
         }
-
         public Playlist(string name, string author, DateTime createAt)
         {
             _name = name;
@@ -39,33 +39,38 @@ namespace Wifi.PlayListEditor.Types
             get => _author;
             set => _author = value;
         }
-
         public IEnumerable<IPlaylistItem> ItemList
         {
             get { return _itemList; }
         }
         public DateTime CreateAt => _createAt;
-
         public TimeSpan Duration
         {
             get
             {
                 TimeSpan duration = TimeSpan.Zero;
-                _itemList.ForEach(x => duration.Add(x.Duration));
+                _itemList.ForEach(x => duration = duration.Add(x.Duration));
 
                 return duration;
             }
         }
+
 
         public bool AllowDuplicates
         {
             get => _allowDuplicates;
             set => _allowDuplicates = value;
         }
-
         public void Add(IPlaylistItem itemToAdd)
         {
+            
             bool addNewItem = true;
+
+            if(itemToAdd == null)
+            {
+                return;
+            }
+
 
             if (!_allowDuplicates)
             {
@@ -77,12 +82,10 @@ namespace Wifi.PlayListEditor.Types
             }
             
         }
-
         public void Clear()
         {
             _itemList.Clear();
         }
-
         public void Remove(IPlaylistItem itemToremove)
         {
             _itemList.Remove(itemToremove);

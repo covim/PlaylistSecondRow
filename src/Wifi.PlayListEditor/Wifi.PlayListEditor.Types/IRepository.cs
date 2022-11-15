@@ -13,7 +13,7 @@ namespace Wifi.PlayListEditor.Types
         /// z.B.: *.m3u  (siehe Wikipedia)
         /// </summary>
         string Extension { get; }   
-        string Decription { get; }
+        string Description { get; }
         IPlaylist Load(string playlistFilePath);
         void Save(IPlaylist playlist, string playlistFilePath);
 

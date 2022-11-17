@@ -12,7 +12,6 @@ using PlaylistsNET.Models;
 using PlaylistsNET.Content;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices.ComTypes;
-using Wifi.PlayList.Editor.Factories;
 
 namespace Wifi.PlayListEditor.Repositories
 {
@@ -71,16 +70,19 @@ namespace Wifi.PlayListEditor.Repositories
 
             var myPlaylist = new Playlist("M3UPlaylist", "WifiPlayListEditor");
 
-            
+
             //add items
             var paths = playlist.GetTracksPaths();
             foreach (var itemPath in paths)
             {
                 var item = _playlistItemFactory.Create(itemPath);
-                myPlaylist.Add(item);
+                if (item != null)
+                {
+                    myPlaylist.Add(item);
+                }
             }
-           
-            
+
+
 
             return myPlaylist;
         }

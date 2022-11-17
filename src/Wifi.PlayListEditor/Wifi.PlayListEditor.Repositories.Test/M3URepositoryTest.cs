@@ -20,14 +20,15 @@ namespace Wifi.PlayListEditor.Repositories.Test
         private IRepository _fixture;
         private Mock<IPlaylist> _mockedPlaylist;
         private Mock<IFileSystem> _mockedFileSystem;
-        
+        private Mock<IPlaylistItemFactory> _mockedPlaylistItemFactory;
 
         [SetUp]
         public void Init()
         {
 
             _mockedFileSystem = new Mock<IFileSystem>();
-            _fixture = new M3URepository(_mockedFileSystem.Object);
+            _mockedPlaylistItemFactory = new Mock<IPlaylistItemFactory>();
+            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
 
             var mockedItem1 = new Mock<IPlaylistItem>();
             mockedItem1.Setup(x => x.Artist).Returns("Artist 1");
@@ -56,7 +57,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
         {
             //arrang
             string contentToWrite = string.Empty;
-
+            
             var _mockedFile = new Mock<IFile>();
             _mockedFile.Setup(x => x.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
                        .Callback<string, string>((path, content) =>
@@ -67,7 +68,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new M3URepository(_mockedFileSystem.Object);
+            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
 
             string referenceContent = "#EXTM3U\r\n#EXTART:Artist 1\r\n#EXTINF:123,Demo Song 1\r\nc:\\testlied1.mp3\r\n#EXTART:Artist 2\r\n#EXTINF:456,Demo Song 2\r\nc:\\testlied2.mp3";
 

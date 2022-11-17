@@ -41,14 +41,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IPlaylistItemFactory.cs" />
+    <Compile Include="PlaylistItemFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Wifi.PlayListEditor.Items\Wifi.PlayListEditor.Items.csproj">
+      <Project>{334AEF69-1F0A-447E-ACA6-61D7AC953619}</Project>
+      <Name>Wifi.PlayListEditor.Items</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wifi.PlayListEditor.Repositories\Wifi.PlayListEditor.Repositories.csproj">
+      <Project>{EFA137E5-D958-4454-AF5E-EE1B13A59F55}</Project>
+      <Name>Wifi.PlayListEditor.Repositories</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wifi.PlayListEditor.Types\Wifi.PlayListEditor.Types.csproj">
       <Project>{25F59E2A-BF88-44E5-BC43-F69A0B90286F}</Project>
       <Name>Wifi.PlayListEditor.Types</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Abstractions">
+      <Version>17.2.3</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

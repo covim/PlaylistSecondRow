@@ -72,7 +72,6 @@ namespace Wifi.PlayListEditor.Repositories.Test
             string referenceContent = "#EXTM3U\r\n#EXTART:Artist 1\r\n#EXTINF:123,Demo Song 1\r\nc:\\testlied1.mp3\r\n#EXTART:Artist 2\r\n#EXTINF:456,Demo Song 2\r\nc:\\testlied2.mp3";
 
 
-
         //act
         _fixture.Save(_mockedPlaylist.Object, @"C:\temp\liste.m3u");
 

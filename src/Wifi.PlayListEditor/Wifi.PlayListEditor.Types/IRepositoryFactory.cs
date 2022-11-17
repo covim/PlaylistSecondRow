@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Wifi.PlayListEditor.Types
 {
-    public interface IRepository : IFileDescription
+    public interface IRepositoryFactory
     {
-     
-        IPlaylist Load(string playlistFilePath);
-        void Save(IPlaylist playlist, string playlistFilePath);
-
+        IEnumerable<IFileDescription> AvailableTypes { get; }
+        IRepository Create(string itemPath);
     }
 }

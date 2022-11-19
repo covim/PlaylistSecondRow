@@ -25,7 +25,7 @@ namespace Wifi.PlayList.Editor.Factories
         public IEnumerable<IFileDescription> AvailableTypes => new IFileDescription[] 
         {
             new Mp3Item(),
-            //new ImageItem(),
+            new ImageItem(),
         };
 
         public IPlaylistItem Create(string itemPath)
@@ -41,8 +41,8 @@ namespace Wifi.PlayList.Editor.Factories
                 case ".mp3":
                     return new Mp3Item(itemPath);
 
-                //case ".jpg":
-                //    return new ImageItem(itemPath);
+                case ".jpg":
+                    return new ImageItem(itemPath);
 
                 default:
                     return null;

@@ -18,11 +18,6 @@ namespace Wifi.PlayListEditor.Items
         private string _path;
         private Image _thumbnail;
 
-
-        // unit Test würde in dieser Klasse nur den Konstruktor ausführen und die Daten mit der externen Datei abgleichen
-        // "C:\Users\User\Music\DemoMusik\001 - Bruno Mars - Grenade.mp3"
-
-
         /// <summary>
         /// Create a dummy Mp3Item instance with no tag information
         /// </summary>
@@ -32,6 +27,25 @@ namespace Wifi.PlayListEditor.Items
             _path = filePath;
             ReadIdTags();
         }
+        public string Title
+        {
+            get => _title;
+            set => _title = value;
+        }
+        public string Artist
+        {
+            get => _artist;
+            set => _artist = value;
+        }
+        public TimeSpan Duration => _duration;
+        public string Path => _path;
+        public Image Thumbnail
+        {
+            get => _thumbnail;
+            set => _thumbnail = value;
+        }
+        public string Extension => ".mp3";
+        public string Description => "mp3 Music File";
 
         private void ReadIdTags()
         {
@@ -55,31 +69,5 @@ namespace Wifi.PlayListEditor.Items
                 _thumbnail = null;
             }
         }
-
-
-        public string Title
-        {
-            get => _title;
-            set => _title = value;
-        }
-        public string Artist
-        {
-            get => _artist;
-            set => _artist = value;
-        }
-
-        public TimeSpan Duration => _duration;
-
-        public string Path => _path;
-
-        public Image Thumbnail
-        {
-            get => _thumbnail;
-            set => _thumbnail = value;
-        }
-
-        public string Extension => ".mp3";
-
-        public string Description => "mp3 Music File";
     }
 }

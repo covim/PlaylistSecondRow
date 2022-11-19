@@ -11,7 +11,6 @@ namespace Wifi.PlayListEditor.Types
         private string _name;
         private string _author;
         private DateTime _createAt;
-        private TimeSpan _duration;
         private List<IPlaylistItem> _itemList;
         private bool _allowDuplicates;
 

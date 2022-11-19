@@ -12,6 +12,7 @@ using PlaylistsNET.Models;
 using PlaylistsNET.Content;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices.ComTypes;
+using System.Globalization;
 
 namespace Wifi.PlayListEditor.Repositories
 {
@@ -48,27 +49,20 @@ namespace Wifi.PlayListEditor.Repositories
 
         public IPlaylist Load(string playlistFilePath)
         {
-            //todo: abfrage auf .extension
-            //if (!playlistFilePath.EndsWith(".m3u") || playlistFilePath == null)
-            //{
-            //    return null;
-            //}
-
-            //var returnList = new Playlist("FromFile", "unknown");
-            //var m3u = M3U.ParseFromFile(playlistFilePath);
-            //foreach (var media in m3u.Medias)
-            //{
-            //    var playlistItem = new Mp3Item(media.MediaFile);
-            //    returnList.Add(playlistItem);
-            //}
-            //return returnList;
+            if (string.IsNullOrEmpty(playlistFilePath))
+            {
+                return null;
+            }
 
             var stream = _fileSystem.File.OpenRead(playlistFilePath);
-
             var parser = PlaylistParserFactory.GetPlaylistParser(_extension);
             IBasePlaylist playlist = parser.GetFromStream(stream);
 
-            var myPlaylist = new Playlist("M3UPlaylist", "WifiPlayListEditor");
+            List<string> fileLines = _fileSystem.File.ReadAllLines(playlistFilePath).ToList();
+                              
+            var myPlaylist = new Playlist(fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length),
+                                          fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length),
+                                          DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture));
 
 
             //add items
@@ -98,11 +92,11 @@ namespace Wifi.PlayListEditor.Repositories
             M3uPlaylist m3uPlaylist = new M3uPlaylist();
             m3uPlaylist.IsExtended = true;
 
+
             foreach (var item in playlist.ItemList)
             {
                 m3uPlaylist.PlaylistEntries.Add(new M3uPlaylistEntry()
                 {
-                    AlbumArtist = item.Artist,
                     Duration = item.Duration,
                     Path = item.Path,
                     Title = item.Title
@@ -113,7 +107,19 @@ namespace Wifi.PlayListEditor.Repositories
             M3uContent content = new M3uContent();
             string text = content.ToText(m3uPlaylist);
 
-            _fileSystem.File.WriteAllText(playlistFilePath, text);
+            text += $"\r\n#AUTHOR:{playlist.Author}" +
+                    $"\r\n#NAME:{playlist.Name}" +
+                    $"\r\n#CREATEAT:{playlist.CreateAt.ToString("yyyy-MM-dd")}";
+
+            try
+            {
+                _fileSystem.File.WriteAllText(playlistFilePath, text);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
 
         }
     }

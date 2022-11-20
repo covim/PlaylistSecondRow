@@ -149,25 +149,10 @@ namespace Wifi.PlayListEditor.Repositories.Test
         public void LoadTest()
         {
             //Arrange
-            string referenceContent = "#EXTM3U\r\n" +
-                "#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n" +
-                "#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n";
-
-            string[] referenceContentArray = new string[8];
-            referenceContentArray[0] = "#EXTM3U";
-            referenceContentArray[1] = "#EXTINF:101,Demo Song 1";
-            referenceContentArray[2] = "c:\\testlied1.mp3";
-            referenceContentArray[3] = "#EXTINF:202,Demo Song 2";
-            referenceContentArray[4] = "c:\\testlied2.mp3";
-            referenceContentArray[5] = "#AUTHOR:dj Joe";
-            referenceContentArray[6] = "#NAME:Superliste";
-            referenceContentArray[7] = "#CREATEAT:2022-11-15";
 
             string jsonReferenceContent = "{\"title\":\"Superliste\",\"author\":\"dj Joe\",\"createdAt\":\"2022-11-15\",\"items\":[{\"path\":\"c:\\\\testlied1.mp3\"},{\"path\":\"c:\\\\testlied2.mp3\"}]}";
 
             var mockedFile = new Mock<IFile>();
-            mockedFile.Setup(x => x.OpenRead(It.IsAny<string>())).Returns(new MemoryStream(Encoding.UTF8.GetBytes(referenceContent)));
-            mockedFile.Setup(x => x.ReadAllLines(It.IsAny<string>())).Returns(referenceContentArray);
             mockedFile.Setup(x => x.ReadAllText(It.IsAny<string>())).Returns(jsonReferenceContent);
 
 

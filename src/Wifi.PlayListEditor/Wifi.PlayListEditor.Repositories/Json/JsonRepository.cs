@@ -68,11 +68,7 @@ namespace Wifi.PlayListEditor.Repositories.Json
                 }
             }
 
-            
-
-
-
-            return myPlaylist;
+             return myPlaylist;
         }
 
         public void Save(IPlaylist playlist, string playlistFilePath)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlaylistsNET.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

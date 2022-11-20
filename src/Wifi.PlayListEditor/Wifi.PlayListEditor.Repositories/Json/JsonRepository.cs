@@ -55,7 +55,7 @@ namespace Wifi.PlayListEditor.Repositories.Json
             PlaylistEntity domain = JsonConvert.DeserializeObject<PlaylistEntity>(json);
 
 
-            var myPlaylist = new Playlist(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
+            //var myPlaylist = new Playlist(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
             var myPlaylist = _playlistFactory.Create(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             //add items
@@ -67,6 +67,8 @@ namespace Wifi.PlayListEditor.Repositories.Json
                     myPlaylist.Add(newItem);
                 }
             }
+
+            
 
 
 

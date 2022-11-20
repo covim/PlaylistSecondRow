@@ -48,6 +48,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var mockedItem3 = new Mock<IPlaylistItem>();
             mockedItem3.Setup(x => x.Title).Returns("TestBild");
             mockedItem3.Setup(x => x.Path).Returns(@"c:\testbild1.jpg");
+            mockedItem3.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(30));
 
             IPlaylistItem[] myMockedItems = new[] { mockedItem1.Object, mockedItem2.Object, mockedItem3.Object };
 
@@ -56,6 +57,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             _mockedPlaylist.Setup(x => x.Name).Returns("Superliste");
             _mockedPlaylist.Setup(x => x.CreateAt).Returns(new DateTime(2022, 11, 15));
             _mockedPlaylist.Setup(x => x.ItemList).Returns(myMockedItems);
+            _mockedPlaylist.Setup(x => x.Duration).Returns(new TimeSpan(0,0,333));
 
         }
 
@@ -175,8 +177,10 @@ namespace Wifi.PlayListEditor.Repositories.Test
             DateTime creatAtSoll = new DateTime(2022, 11, 15);
 
 
-            //teuscht die anwesenheit von .mp3 files vor
+            //täuscht die anwesenheit von .mp3 files vor
             _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
+
+            _mockedPlaylistFactory.Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>())).Returns(_mockedPlaylist.Object);
 
             _fixture = new JsonRepository(_mockedFileSystem.Object,_mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
             //_fixture = new JsonRepository(_mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
@@ -185,9 +189,11 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //act
             IPlaylist playlist = _fixture.Load(@"c:\temp\liste.json");
 
+            TimeSpan dauer = playlist.Duration;
+
             //assert
-            Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(303)));
-            Assert.That(playlist.ItemList.Count(), Is.EqualTo(2));
+            Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(333)));
+            Assert.That(playlist.ItemList.Count(), Is.EqualTo(3));
             Assert.That(playlist.Author, Is.EqualTo("dj Joe"));
             Assert.That(playlist.Name, Is.EqualTo("Superliste"));
             Assert.That(playlist.CreateAt, Is.EqualTo(creatAtSoll));

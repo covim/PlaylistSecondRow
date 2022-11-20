@@ -59,10 +59,45 @@ namespace Wifi.PlayListEditor.Repositories
             IBasePlaylist playlist = parser.GetFromStream(stream);
 
             List<string> fileLines = _fileSystem.File.ReadAllLines(playlistFilePath).ToList();
-                              
-            var myPlaylist = new Playlist(fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length),
-                                          fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length),
-                                          DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+
+            string string1 = String.Empty;
+            string string2 = String.Empty;
+            DateTime dateTime1 = new DateTime(2022,11,15);
+
+            try
+            {
+                string1 = fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length);
+            }
+            catch (Exception)
+            {
+                string1 = "noName";
+            }
+
+            try
+            {
+                string2 = fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length);
+            }
+            catch (Exception)
+            {
+                string2 = "noAuthor";
+            }
+
+            try
+            {
+                dateTime1 = DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+            catch (Exception)
+            {
+
+                dateTime1 = DateTime.Today;
+            }
+            
+
+
+            var myPlaylist = new Playlist(string1,
+                                          string2,
+                                          dateTime1);
 
 
             //add items

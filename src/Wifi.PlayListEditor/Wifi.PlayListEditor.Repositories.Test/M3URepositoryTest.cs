@@ -266,6 +266,47 @@ namespace Wifi.PlayListEditor.Repositories.Test
 
         }
 
+        [Test]
+        public void LoadTest_noAuthorNameCreate()
+        {
+            //Arrange
+            string referenceContent = "#EXTM3U\r\n" +
+                "#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n" +
+                "#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n";
+
+            string[] referenceContentArray = new string[5];
+            referenceContentArray[0] = "#EXTM3U";
+            referenceContentArray[1] = "#EXTINF:101,Demo Song 1";
+            referenceContentArray[2] = "c:\\testlied1.mp3";
+            referenceContentArray[3] = "#EXTINF:202,Demo Song 2";
+            referenceContentArray[4] = "c:\\testlied2.mp3";
+
+            var mockedFile = new Mock<IFile>();
+            mockedFile.Setup(x => x.OpenRead(It.IsAny<string>())).Returns(new MemoryStream(Encoding.UTF8.GetBytes(referenceContent)));
+            mockedFile.Setup(x => x.ReadAllLines(It.IsAny<string>())).Returns(referenceContentArray);
+
+            _mockedFileSystem = new Mock<IFileSystem>();
+            _mockedFileSystem.Setup(x => x.File).Returns(mockedFile.Object);
+
+            DateTime creatAtSoll = new DateTime(2022, 11, 15);
+
+
+            //teuscht die anwesenheit von .mp3 files vor
+            _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
+
+            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+
+            //act
+            IPlaylist playlist = _fixture.Load("demoplaylist.m3u");
+
+            //assert
+            Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(303)));
+            Assert.That(playlist.ItemList.Count(), Is.EqualTo(2));
+            Assert.That(playlist.Author, Is.EqualTo("noAuthor"));
+            Assert.That(playlist.Name, Is.EqualTo("noName"));
+            Assert.That(playlist.CreateAt, Is.EqualTo(DateTime.Today));
+        }
+
 
 
 

@@ -23,6 +23,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
         private Mock<IPlaylist> _mockedPlaylist;
         private Mock<IFileSystem> _mockedFileSystem;
         private Mock<IPlaylistItemFactory> _mockedPlaylistItemFactory;
+        private Mock<IPlaylistFactory> _mockedPlaylistFactory;
 
         [SetUp]
         public void Init()
@@ -30,7 +31,9 @@ namespace Wifi.PlayListEditor.Repositories.Test
 
             _mockedFileSystem = new Mock<IFileSystem>();
             _mockedPlaylistItemFactory = new Mock<IPlaylistItemFactory>();
-            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+            _mockedPlaylistFactory= new Mock<IPlaylistFactory>();
+
+            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
 
             var mockedItem1 = new Mock<IPlaylistItem>();
             mockedItem1.Setup(x => x.Title).Returns("Demo Song 1");
@@ -72,7 +75,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
             //_fixture = new JsonRepository(_mockedPlaylistItemFactory.Object);
 
             string referenceContent = "{\"title\":\"Superliste\",\"author\":\"dj Joe\",\"createdAt\":\"2022-11-15\",\"items\":[{\"path\":\"c:\\\\testlied1.mp3\"},{\"path\":\"c:\\\\testlied2.mp3\"},{\"path\":\"c:\\\\testbild1.jpg\"}]}";
@@ -102,7 +105,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
 
 
             //act
@@ -129,7 +132,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+            _fixture = new JsonRepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
 
 
             //act
@@ -140,49 +143,55 @@ namespace Wifi.PlayListEditor.Repositories.Test
 
         }
 
-        //[Test]
-        //public void LoadTest()
-        //{
-        //    //Arrange
-        //    string referenceContent = "#EXTM3U\r\n" +
-        //        "#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n" +
-        //        "#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n";
+        [Test]
+        public void LoadTest()
+        {
+            //Arrange
+            string referenceContent = "#EXTM3U\r\n" +
+                "#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n" +
+                "#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n";
 
-        //    string[] referenceContentArray = new string[8];
-        //    referenceContentArray[0] = "#EXTM3U";
-        //    referenceContentArray[1] = "#EXTINF:101,Demo Song 1";
-        //    referenceContentArray[2] = "c:\\testlied1.mp3";
-        //    referenceContentArray[3] = "#EXTINF:202,Demo Song 2";
-        //    referenceContentArray[4] = "c:\\testlied2.mp3";
-        //    referenceContentArray[5] = "#AUTHOR:dj Joe";
-        //    referenceContentArray[6] = "#NAME:Superliste";
-        //    referenceContentArray[7] = "#CREATEAT:2022-11-15";
+            string[] referenceContentArray = new string[8];
+            referenceContentArray[0] = "#EXTM3U";
+            referenceContentArray[1] = "#EXTINF:101,Demo Song 1";
+            referenceContentArray[2] = "c:\\testlied1.mp3";
+            referenceContentArray[3] = "#EXTINF:202,Demo Song 2";
+            referenceContentArray[4] = "c:\\testlied2.mp3";
+            referenceContentArray[5] = "#AUTHOR:dj Joe";
+            referenceContentArray[6] = "#NAME:Superliste";
+            referenceContentArray[7] = "#CREATEAT:2022-11-15";
 
-        //    var mockedFile = new Mock<IFile>();
-        //    mockedFile.Setup(x => x.OpenRead(It.IsAny<string>())).Returns(new MemoryStream(Encoding.UTF8.GetBytes(referenceContent)));
-        //    mockedFile.Setup(x => x.ReadAllLines(It.IsAny<string>())).Returns(referenceContentArray);
+            string jsonReferenceContent = "{\"title\":\"Superliste\",\"author\":\"dj Joe\",\"createdAt\":\"2022-11-15\",\"items\":[{\"path\":\"c:\\\\testlied1.mp3\"},{\"path\":\"c:\\\\testlied2.mp3\"}]}";
 
-        //    _mockedFileSystem = new Mock<IFileSystem>();
-        //    _mockedFileSystem.Setup(x => x.File).Returns(mockedFile.Object);
-
-        //    DateTime creatAtSoll = new DateTime(2022,11,15);
+            var mockedFile = new Mock<IFile>();
+            mockedFile.Setup(x => x.OpenRead(It.IsAny<string>())).Returns(new MemoryStream(Encoding.UTF8.GetBytes(referenceContent)));
+            mockedFile.Setup(x => x.ReadAllLines(It.IsAny<string>())).Returns(referenceContentArray);
+            mockedFile.Setup(x => x.ReadAllText(It.IsAny<string>())).Returns(jsonReferenceContent);
 
 
-        //    //teuscht die anwesenheit von .mp3 files vor
-        //    _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
+            _mockedFileSystem = new Mock<IFileSystem>();
+            _mockedFileSystem.Setup(x => x.File).Returns(mockedFile.Object);
 
-        //    _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+            DateTime creatAtSoll = new DateTime(2022, 11, 15);
 
-        //    //act
-        //    IPlaylist playlist = _fixture.Load("demoplaylist.m3u");
 
-        //    //assert
-        //    Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(303)));
-        //    Assert.That(playlist.ItemList.Count(), Is.EqualTo(2));
-        //    Assert.That(playlist.Author, Is.EqualTo("dj Joe"));
-        //    Assert.That(playlist.Name, Is.EqualTo("Superliste"));
-        //    Assert.That(playlist.CreateAt, Is.EqualTo(creatAtSoll));
-        //}
+            //teuscht die anwesenheit von .mp3 files vor
+            _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
+
+            _fixture = new JsonRepository(_mockedFileSystem.Object,_mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            //_fixture = new JsonRepository(_mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+
+
+            //act
+            IPlaylist playlist = _fixture.Load(@"c:\temp\liste.json");
+
+            //assert
+            Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(303)));
+            Assert.That(playlist.ItemList.Count(), Is.EqualTo(2));
+            Assert.That(playlist.Author, Is.EqualTo("dj Joe"));
+            Assert.That(playlist.Name, Is.EqualTo("Superliste"));
+            Assert.That(playlist.CreateAt, Is.EqualTo(creatAtSoll));
+        }
 
         //[Test]
         //public void LoadTest_IsEmpty()
@@ -266,24 +275,24 @@ namespace Wifi.PlayListEditor.Repositories.Test
 
         //}
 
-        //private Mock<IPlaylistItemFactory> CreateMockedPlaylistItemFactory()
-        //{
-        //    var mockedPlaylistItemFactory = new Mock<IPlaylistItemFactory>();
+        private Mock<IPlaylistItemFactory> CreateMockedPlaylistItemFactory()
+        {
+            var mockedPlaylistItemFactory = new Mock<IPlaylistItemFactory>();
 
-        //    var mockedItem1 = new Mock<IPlaylistItem>();
-        //    mockedItem1.Setup(x => x.Title).Returns("Demo Song 1");
-        //    mockedItem1.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(101));
-        //    mockedItem1.Setup(x => x.Path).Returns(@"c:\testlied1.mp3");
+            var mockedItem1 = new Mock<IPlaylistItem>();
+            mockedItem1.Setup(x => x.Title).Returns("Demo Song 1");
+            mockedItem1.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(101));
+            mockedItem1.Setup(x => x.Path).Returns(@"c:\testlied1.mp3");
 
-        //    var mockedItem2 = new Mock<IPlaylistItem>();
-        //    mockedItem2.Setup(x => x.Title).Returns("Demo Song 2");
-        //    mockedItem2.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(202));
-        //    mockedItem2.Setup(x => x.Path).Returns(@"c:\testlied2.mp3");
+            var mockedItem2 = new Mock<IPlaylistItem>();
+            mockedItem2.Setup(x => x.Title).Returns("Demo Song 2");
+            mockedItem2.Setup(x => x.Duration).Returns(TimeSpan.FromSeconds(202));
+            mockedItem2.Setup(x => x.Path).Returns(@"c:\testlied2.mp3");
 
-        //    mockedPlaylistItemFactory.Setup(x => x.Create(@"c:\testlied1.mp3")).Returns(mockedItem1.Object);
-        //    mockedPlaylistItemFactory.Setup(x => x.Create(@"c:\testlied2.mp3")).Returns(mockedItem2.Object);
+            mockedPlaylistItemFactory.Setup(x => x.Create(@"c:\testlied1.mp3")).Returns(mockedItem1.Object);
+            mockedPlaylistItemFactory.Setup(x => x.Create(@"c:\testlied2.mp3")).Returns(mockedItem2.Object);
 
-        //    return mockedPlaylistItemFactory;
-        //}
+            return mockedPlaylistItemFactory;
+        }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Wifi.PlayListEditor.Types;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -15,17 +17,20 @@ namespace Wifi.PlayListEditor.Repositories.Json
         private readonly string _extension;
         private readonly IFileSystem _fileSystem;
         private readonly IPlaylistItemFactory _playlistItemFactory;
-
-        public JsonRepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory)
+        private readonly IPlaylistFactory _playlistFactory;
+       
+        public JsonRepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory)
         {
             _fileSystem = fileSystem;
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
             _extension = ".json";
         }
-        public JsonRepository(IPlaylistItemFactory playlistItemFactory) : this(new FileSystem(), playlistItemFactory)
+        public JsonRepository(IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory) : this(new FileSystem(), playlistItemFactory, playlistFactory)
         {
             _extension = ".json";
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
         }
         public string Description => "json Playlist file";
         public string Extension
@@ -37,8 +42,35 @@ namespace Wifi.PlayListEditor.Repositories.Json
 
         public IPlaylist Load(string playlistFilePath)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             //todo string einlesen und deserialisiern
+
+            if (string.IsNullOrEmpty(playlistFilePath))
+            {
+                return null;
+            }
+
+            string json = _fileSystem.File.ReadAllText(playlistFilePath);
+            
+            PlaylistEntity domain = JsonConvert.DeserializeObject<PlaylistEntity>(json);
+
+
+            var myPlaylist = new Playlist(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
+            var myPlaylist = _playlistFactory.Create(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            //add items
+            foreach (var item in domain.items)
+            {
+                var newItem = _playlistItemFactory.Create(item.path);
+                if (item.path != null)
+                {
+                    myPlaylist.Add(newItem);
+                }
+            }
+
+
+
+            return myPlaylist;
         }
 
         public void Save(IPlaylist playlist, string playlistFilePath)
@@ -65,5 +97,7 @@ namespace Wifi.PlayListEditor.Repositories.Json
             }
 
         }
+
+
     }
 }

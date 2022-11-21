@@ -302,8 +302,8 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //assert
             Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(303)));
             Assert.That(playlist.ItemList.Count(), Is.EqualTo(2));
-            Assert.That(playlist.Author, Is.EqualTo("noAuthor"));
-            Assert.That(playlist.Name, Is.EqualTo("noName"));
+            Assert.That(playlist.Author, Is.EqualTo("No Author"));
+            Assert.That(playlist.Name, Is.EqualTo("No Name"));
             Assert.That(playlist.CreateAt, Is.EqualTo(DateTime.Today));
         }
 

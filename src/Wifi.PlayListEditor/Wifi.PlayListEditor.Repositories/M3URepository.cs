@@ -61,43 +61,46 @@ namespace Wifi.PlayListEditor.Repositories
             List<string> fileLines = _fileSystem.File.ReadAllLines(playlistFilePath).ToList();
 
 
-            string string1 = String.Empty;
-            string string2 = String.Empty;
-            DateTime dateTime1 = new DateTime(2022,11,15);
+            string nameFromFile = String.Empty;
+            string authorFromFile = String.Empty;
+            DateTime dateFromFile = new DateTime(2022,11,15);
+            var paramsSeparator = ':';
 
-            try
-            {
-                string1 = fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length);
-            }
-            catch (Exception)
-            {
-                string1 = "noName";
-            }
+            nameFromFile = fileLines.FirstOrDefault(x => x.Contains("#NAME"))?.Split(paramsSeparator)[1] ?? "No Name";
+            authorFromFile = fileLines.FirstOrDefault(x => x.Contains("#AUTHOR"))?.Split(paramsSeparator)[1] ?? "No Author";
+            dateFromFile = DateTime.ParseExact(fileLines.FirstOrDefault(x => x.Contains("#CREATEAT:"))?.Split(paramsSeparator)[1] ?? DateTime.Today.ToString("yyyy-MM-dd"), "yyyy-MM-dd",CultureInfo.InvariantCulture);
 
-            try
-            {
-                string2 = fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length);
-            }
-            catch (Exception)
-            {
-                string2 = "noAuthor";
-            }
+            //try
+            //{
+            //    string1 = fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length);
+            //}
+            //catch (Exception)
+            //{
+            //    string1 = "noName";
+            //}
 
-            try
-            {
-                dateTime1 = DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            }
-            catch (Exception)
-            {
+            //try
+            //{
+            //    string2 = fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length);
+            //}
+            //catch (Exception)
+            //{
+            //    string2 = "noAuthor";
+            //}
 
-                dateTime1 = DateTime.Today;
-            }
+            //try
+            //{
+            //    dateTime1 = DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            //}
+            //catch (Exception)
+            //{
+
+            //    dateTime1 = DateTime.Today;
+            //}
             
 
 
-            var myPlaylist = new Playlist(string1,
-                                          string2,
-                                          dateTime1);
+            var myPlaylist = new Playlist(nameFromFile, authorFromFile, dateFromFile);
 
 
             //add items

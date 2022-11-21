@@ -66,6 +66,11 @@ namespace Wifi.PlayListEditor.Repositories
             DateTime dateFromFile = new DateTime(2022,11,15);
             var paramsSeparator = ':';
 
+
+            //https://learn.microsoft.com/en-in/dotnet/csharp/language-reference/operators/null-coalescing-operator
+            //https://learn.microsoft.com/en-in/dotnet/csharp/language-reference/operators/member-access-operators#null-conditional-operators--and-
+            //https://youtu.be/n3s_apjZzBw
+
             nameFromFile = fileLines.FirstOrDefault(x => x.Contains("#NAME"))?.Split(paramsSeparator)[1] ?? "No Name";
             authorFromFile = fileLines.FirstOrDefault(x => x.Contains("#AUTHOR"))?.Split(paramsSeparator)[1] ?? "No Author";
             dateFromFile = DateTime.ParseExact(fileLines.FirstOrDefault(x => x.Contains("#CREATEAT:"))?.Split(paramsSeparator)[1] ?? DateTime.Today.ToString("yyyy-MM-dd"), "yyyy-MM-dd",CultureInfo.InvariantCulture);

@@ -2,15 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using Wifi.PlayListEditor.Repositories.Json;
 using Wifi.PlayListEditor.Types;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Wifi.PlayListEditor.Repositories.Json
+namespace Wifi.PlayListEditor.Repositories
 {
     public class JsonRepository : IRepository
     {
@@ -18,7 +20,7 @@ namespace Wifi.PlayListEditor.Repositories.Json
         private readonly IFileSystem _fileSystem;
         private readonly IPlaylistItemFactory _playlistItemFactory;
         private readonly IPlaylistFactory _playlistFactory;
-       
+
         public JsonRepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory)
         {
             _fileSystem = fileSystem;
@@ -50,13 +52,18 @@ namespace Wifi.PlayListEditor.Repositories.Json
                 return null;
             }
 
-            string json = _fileSystem.File.ReadAllText(playlistFilePath);
-            
+            string json = String.Empty;
+            var jsonStream = _fileSystem.File.OpenRead(playlistFilePath);
+            using (var sr = new StreamReader(jsonStream))
+            {
+                json = sr.ReadToEnd();
+            }
+
             PlaylistEntity domain = JsonConvert.DeserializeObject<PlaylistEntity>(json);
 
 
             //var myPlaylist = new Playlist(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
-            var myPlaylist = _playlistFactory.Create(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
+            var myPlaylist = _playlistFactory.Create(domain.title, domain.author, DateTime.ParseExact(domain.createdAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             //add items
             foreach (var item in domain.items)
@@ -68,7 +75,7 @@ namespace Wifi.PlayListEditor.Repositories.Json
                 }
             }
 
-             return myPlaylist;
+            return myPlaylist;
         }
 
         public void Save(IPlaylist playlist, string playlistFilePath)
@@ -83,7 +90,7 @@ namespace Wifi.PlayListEditor.Repositories.Json
             settings.StringEscapeHandling = StringEscapeHandling.EscapeHtml;
 
             string json = JsonConvert.SerializeObject(entity);
-                        
+
 
             try
             {

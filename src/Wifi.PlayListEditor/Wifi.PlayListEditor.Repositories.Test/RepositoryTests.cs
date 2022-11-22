@@ -15,14 +15,26 @@ using Wifi.PlayListEditor.Types;
 
 namespace Wifi.PlayListEditor.Repositories.Test
 {
-    [TestFixture]
-    public class M3URepositoryTest
+    [TestFixture(typeof(M3URepository), ".m3u", "M3U Playlist file", "#EXTM3U\r\n#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n#AUTHOR:dj Joe\r\n#NAME:Superliste\r\n#CREATEAT:2022-11-15\r\n")]
+    [TestFixture(typeof(JsonRepository), ".json", "json Playlist file", "")]
+
+    public class RepositoryTests<T> where T : IRepository
     {
         private IRepository _fixture;
         private Mock<IPlaylist> _mockedPlaylist;
         private Mock<IFileSystem> _mockedFileSystem;
-        private Mock<IPlaylistFactory> _mockedPlaylistFactory;
         private Mock<IPlaylistItemFactory> _mockedPlaylistItemFactory;
+        private Mock<IPlaylistFactory> _mockedPlaylistFactory;
+        private readonly string _refExtension;
+        private readonly string _refDescription;
+        private readonly string _refContent;
+
+        public RepositoryTests(string refExtension, string refDescription, string refContent)
+        {
+            _refExtension = refExtension;
+            _refDescription = refDescription;
+            _refContent = refContent;
+        }
 
         [SetUp]
         public void Init()
@@ -31,7 +43,9 @@ namespace Wifi.PlayListEditor.Repositories.Test
             _mockedFileSystem = new Mock<IFileSystem>();
             _mockedPlaylistItemFactory = new Mock<IPlaylistItemFactory>();
             _mockedPlaylistFactory = new Mock<IPlaylistFactory>();
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object , _mockedPlaylistFactory.Object });
+            //_fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
 
             var mockedItem1 = new Mock<IPlaylistItem>();
             mockedItem1.Setup(x => x.Title).Returns("Demo Song 1");
@@ -69,7 +83,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object }); ;
 
             string referenceContent = "#EXTM3U\r\n" +
                 "#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n" +
@@ -80,7 +94,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
 
 
         //act
-        _fixture.Save(_mockedPlaylist.Object, @"C:\temp\liste.m3u");
+        _fixture.Save(_mockedPlaylist.Object, @"C:\temp\liste" + _refExtension);
 
         //asssert
         Assert.That(contentToWrite, Is.EqualTo(referenceContent));
@@ -103,11 +117,11 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
 
             //act
-            _fixture.Save(null, @"C:\temp\liste.m3u");
+            _fixture.Save(null, @"C:\temp\liste" + _refExtension);
 
             //asssert
             Assert.That(contentToWrite, Is.EqualTo(String.Empty));
@@ -131,7 +145,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             var _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(_mockedFile.Object);
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
 
             //act
@@ -147,23 +161,22 @@ namespace Wifi.PlayListEditor.Repositories.Test
         {
             //Arrange
             string referenceContent = "#EXTM3U\r\n" +
-                "#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n" +
-                "#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n";
+                "#EXTINF:101,Demo Song 1\r\n" +
+                "c:\\testlied1.mp3\r\n" +
+                "#EXTINF:202,Demo Song 2\r\n" +
+                "c:\\testlied2.mp3\r\n" +
+                "#AUTHOR:dj Joe\r\n" +
+                "#NAME:Superliste\r\n" +
+                "#CREATEAT:2022-11-15\r\n";
 
-            string[] referenceContentArray = new string[8];
-            referenceContentArray[0] = "#EXTM3U";
-            referenceContentArray[1] = "#EXTINF:101,Demo Song 1";
-            referenceContentArray[2] = "c:\\testlied1.mp3";
-            referenceContentArray[3] = "#EXTINF:202,Demo Song 2";
-            referenceContentArray[4] = "c:\\testlied2.mp3";
-            referenceContentArray[5] = "#AUTHOR:dj Joe";
-            referenceContentArray[6] = "#NAME:Superliste";
-            referenceContentArray[7] = "#CREATEAT:2022-11-15";
+            
+
+            string[] seperator = { "\r\n", };
 
             var mockedFile = new Mock<IFile>();
-            mockedFile.Setup(x => x.OpenRead("demoplaylist.m3u")).Returns(new MemoryStream(Encoding.UTF8.GetBytes(referenceContent)));
+            mockedFile.Setup(x => x.OpenRead("demoplaylist" + _refExtension)).Returns(new MemoryStream(Encoding.UTF8.GetBytes(referenceContent)));
             mockedFile.Setup(x => x.Exists(It.IsAny<string>())).Returns(true);
-            mockedFile.Setup(x => x.ReadAllLines(It.IsAny<string>())).Returns(referenceContentArray);
+            mockedFile.Setup(x => x.ReadAllLines(It.IsAny<string>())).Returns(_refContent.Split( seperator , StringSplitOptions.None));
 
             _mockedFileSystem = new Mock<IFileSystem>();
             _mockedFileSystem.Setup(x => x.File).Returns(mockedFile.Object);
@@ -174,10 +187,10 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //teuscht die anwesenheit von .mp3 files vor
             _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
             //act
-            IPlaylist playlist = _fixture.Load("demoplaylist.m3u");
+            IPlaylist playlist = _fixture.Load("demoplaylist"  + _refExtension);
 
             //assert
             Assert.That(playlist.Duration, Is.EqualTo(TimeSpan.FromSeconds(303)));
@@ -218,7 +231,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //teuscht die anwesenheit von .mp3 files vor
             _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
             //act
             IPlaylist playlist = _fixture.Load(String.Empty);
@@ -261,7 +274,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //teuscht die anwesenheit von .mp3 files vor
             _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
             //act
             IPlaylist playlist = _fixture.Load(data);
@@ -313,7 +326,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //teuscht die anwesenheit von .mp3 files vor
             _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
             //act
             IPlaylist playlist = _fixture.Load(null);
@@ -352,7 +365,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
             //teuscht die anwesenheit von .mp3 files vor
             _mockedPlaylistItemFactory = CreateMockedPlaylistItemFactory();
 
-            _fixture = new M3URepository(_mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object);
+            _fixture = (T)Activator.CreateInstance(typeof(T), new object[] { _mockedFileSystem.Object, _mockedPlaylistItemFactory.Object, _mockedPlaylistFactory.Object });
 
             //act
             IPlaylist playlist = _fixture.Load("demoplaylist.m3u");

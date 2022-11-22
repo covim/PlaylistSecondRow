@@ -21,19 +21,22 @@ namespace Wifi.PlayListEditor.Repositories
         private readonly string _extension;
         private readonly IFileSystem _fileSystem;
         private readonly IPlaylistItemFactory _playlistItemFactory;
+        private readonly IPlaylistFactory _playlistFactory;
 
-        public M3URepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory)
+        public M3URepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory)
         {
             _fileSystem = fileSystem;
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
             _extension = ".m3u";
         }
 
 
-        public M3URepository(IPlaylistItemFactory playlistItemFactory) : this(new FileSystem(), playlistItemFactory)
+        public M3URepository(IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory) : this(new FileSystem(), playlistItemFactory, playlistFactory)
         {
             _extension = ".m3u";
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
         }
 
         public string Description => "M3U Playlist file";
@@ -49,7 +52,7 @@ namespace Wifi.PlayListEditor.Repositories
 
         public IPlaylist Load(string playlistFilePath)
         {
-            if (string.IsNullOrEmpty(playlistFilePath))
+            if (string.IsNullOrEmpty(playlistFilePath) || !_fileSystem.File.Exists(playlistFilePath))
             {
                 return null;
             }

@@ -77,38 +77,8 @@ namespace Wifi.PlayListEditor.Repositories
             nameFromFile = fileLines.FirstOrDefault(x => x.Contains("#NAME"))?.Split(paramsSeparator)[1] ?? "No Name";
             authorFromFile = fileLines.FirstOrDefault(x => x.Contains("#AUTHOR"))?.Split(paramsSeparator)[1] ?? "No Author";
             dateFromFile = DateTime.ParseExact(fileLines.FirstOrDefault(x => x.Contains("#CREATEAT:"))?.Split(paramsSeparator)[1] ?? DateTime.Today.ToString("yyyy-MM-dd"), "yyyy-MM-dd",CultureInfo.InvariantCulture);
-
-            //try
-            //{
-            //    string1 = fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length);
-            //}
-            //catch (Exception)
-            //{
-            //    string1 = "noName";
-            //}
-
-            //try
-            //{
-            //    string2 = fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length);
-            //}
-            //catch (Exception)
-            //{
-            //    string2 = "noAuthor";
-            //}
-
-            //try
-            //{
-            //    dateTime1 = DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            //}
-            //catch (Exception)
-            //{
-
-            //    dateTime1 = DateTime.Today;
-            //}
             
-
-
-            var myPlaylist = new Playlist(nameFromFile, authorFromFile, dateFromFile);
+            var myPlaylist = _playlistFactory.Create(nameFromFile, authorFromFile, dateFromFile);
 
 
             //add items
@@ -121,8 +91,6 @@ namespace Wifi.PlayListEditor.Repositories
                     myPlaylist.Add(item);
                 }
             }
-
-
 
             return myPlaylist;
         }

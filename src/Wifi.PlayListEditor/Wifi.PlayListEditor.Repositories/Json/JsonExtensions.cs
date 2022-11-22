@@ -8,11 +8,13 @@ namespace Wifi.PlayListEditor.Repositories.Json
 {
     internal static class JsonExtensions
     {
-        public static IPlaylist ToDomain(this PlaylistEntity playlistEntity, IPlaylistItemFactory playlistItemFactory)
+        public static IPlaylist ToDomain(this PlaylistEntity playlistEntity, IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory)
         {
-            var playlist = new Playlist(playlistEntity.title, 
-                                        playlistEntity.author, 
-                                        DateTime.ParseExact(playlistEntity.createdAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+            //var playlist = new Playlist(playlistEntity.title, 
+            //                            playlistEntity.author, 
+            //                            DateTime.ParseExact(playlistEntity.createdAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            var playlist = playlistFactory.Create(playlistEntity.title, playlistEntity.author, DateTime.ParseExact(playlistEntity.createdAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             foreach (var item in playlistEntity.items)
             {

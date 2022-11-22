@@ -17,6 +17,14 @@ namespace Wifi.PlayList.Editor.Factories
         public PlaylistFactory()
         {
         }
+
+        public IEnumerable<IStorageDescription> AvailableTypes => new IStorageDescription[]
+        {
+            new Playlist(),
+
+        };
+
+
         public IPlaylist Create(string name, string author, DateTime createAt)
         {
             return new Playlist(name, author, createAt);

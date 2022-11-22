@@ -47,7 +47,7 @@ namespace Wifi.PlayListEditor.Repositories
             //throw new NotImplementedException();
             //todo string einlesen und deserialisiern
 
-            if (string.IsNullOrEmpty(playlistFilePath))
+            if (string.IsNullOrEmpty(playlistFilePath) || !_fileSystem.File.Exists(playlistFilePath))
             {
                 return null;
             }
@@ -59,14 +59,13 @@ namespace Wifi.PlayListEditor.Repositories
                 json = sr.ReadToEnd();
             }
 
-            PlaylistEntity domain = JsonConvert.DeserializeObject<PlaylistEntity>(json);
+            PlaylistEntity entity = JsonConvert.DeserializeObject<PlaylistEntity>(json);
 
 
-            //var myPlaylist = new Playlist(domain.title, domain.author, DateTime.ParseExact(domain.createdAt,"yyyy-MM-dd", CultureInfo.InvariantCulture));
-            var myPlaylist = _playlistFactory.Create(domain.title, domain.author, DateTime.ParseExact(domain.createdAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+            var myPlaylist = entity.ToDomain(_playlistItemFactory, _playlistFactory);
 
             //add items
-            foreach (var item in domain.items)
+            foreach (var item in entity.items)
             {
                 var newItem = _playlistItemFactory.Create(item.path);
                 if (item.path != null)

@@ -8,6 +8,9 @@ namespace Wifi.PlayListEditor.Types
 {
     public interface IPlaylistFactory
     {
+       
+        IEnumerable<IStorageDescription> AvailableTypes { get; }
+
         IPlaylist Create(string author, string name, DateTime createAt);
     }
 }

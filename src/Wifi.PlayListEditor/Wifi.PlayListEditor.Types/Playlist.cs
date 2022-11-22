@@ -13,8 +13,11 @@ namespace Wifi.PlayListEditor.Types
         private DateTime _createAt;
         private List<IPlaylistItem> _itemList;
         private bool _allowDuplicates;
+        private string _storageLocation = "local";
+        private string _description = "local saved Playlist";
 
 
+        public Playlist() { }
         public Playlist(string name, string author) : this(name, author, DateTime.Now)
         {
         }
@@ -60,6 +63,22 @@ namespace Wifi.PlayListEditor.Types
             get => _allowDuplicates;
             set => _allowDuplicates = value;
         }
+
+
+
+        
+
+        public string StorageLocation 
+        { 
+            get => _storageLocation; 
+            //set => _storageLocation = value; 
+        }
+        public string Description
+        { 
+            get => _description; 
+            //set => _description = value; 
+        }
+
         public void Add(IPlaylistItem itemToAdd)
         {
             

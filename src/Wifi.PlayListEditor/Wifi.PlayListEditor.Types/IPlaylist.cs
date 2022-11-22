@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wifi.PlayListEditor.Types
 {
-    public interface IPlaylist
+    public interface IPlaylist : IStorageDescription
     {
         string Name { get; set; }
         string Author { get; set; }

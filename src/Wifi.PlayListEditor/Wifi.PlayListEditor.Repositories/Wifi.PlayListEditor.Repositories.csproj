@@ -45,6 +45,7 @@
     <Compile Include="Json\JsonExtensions.cs" />
     <Compile Include="JsonRepository.cs" />
     <Compile Include="Json\PlaylistEntity.cs" />
+    <Compile Include="PlsRepository.cs" />
     <Compile Include="M3URepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

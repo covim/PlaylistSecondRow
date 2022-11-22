@@ -13,19 +13,20 @@ namespace Wifi.PlayList.Editor.Factories
 
         private readonly IFileSystem _fileSystem;
         private readonly IPlaylistItemFactory _playlistItemFactory;
+        private readonly IPlaylistFactory _playlistFactory;
         private List<IRepository> _availableTypes;
 
         public RepositoryFactory(IPlaylistItemFactory playlistItemFactory) : this(new FileSystem(), playlistItemFactory)
         {
         }
 
-        public RepositoryFactory(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory)
+        public RepositoryFactory(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory, )
         {
             _fileSystem = fileSystem;
             _playlistItemFactory = playlistItemFactory;
             _availableTypes = new List<IRepository>()
             {
-                new M3URepository(_fileSystem , _playlistItemFactory),
+                new M3URepository(_fileSystem , _playlistItemFactory, _playlistFactory),
                 //new PlsRepository(_fileSystem , _playlistItemFactory)
             };
 

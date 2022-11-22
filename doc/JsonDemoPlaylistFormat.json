@@ -1,0 +1,16 @@
+{
+	"title": "Meine Superhits",
+	"author": "DJ Sauron",
+	"createdAt": "2022-11-17",
+	"items":[
+		{
+			"path": "c:\\myMusic\\DemoSong1.mp3"
+		},
+		{
+			"path": "c:\\myMusic\\DemoSong2.mp3"
+		},
+		{
+			"path": "c:\\myMusic\\DemoSong3.mp3"
+		}
+	]
+}

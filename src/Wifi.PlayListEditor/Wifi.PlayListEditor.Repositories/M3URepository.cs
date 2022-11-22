@@ -21,19 +21,22 @@ namespace Wifi.PlayListEditor.Repositories
         private readonly string _extension;
         private readonly IFileSystem _fileSystem;
         private readonly IPlaylistItemFactory _playlistItemFactory;
+        private readonly IPlaylistFactory _playlistFactory;
 
-        public M3URepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory)
+        public M3URepository(IFileSystem fileSystem, IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory)
         {
             _fileSystem = fileSystem;
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
             _extension = ".m3u";
         }
 
 
-        public M3URepository(IPlaylistItemFactory playlistItemFactory) : this(new FileSystem(), playlistItemFactory)
+        public M3URepository(IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory) : this(new FileSystem(), playlistItemFactory, playlistFactory)
         {
             _extension = ".m3u";
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
         }
 
         public string Description => "M3U Playlist file";
@@ -49,7 +52,7 @@ namespace Wifi.PlayListEditor.Repositories
 
         public IPlaylist Load(string playlistFilePath)
         {
-            if (string.IsNullOrEmpty(playlistFilePath))
+            if (string.IsNullOrEmpty(playlistFilePath) || !_fileSystem.File.Exists(playlistFilePath))
             {
                 return null;
             }
@@ -59,10 +62,23 @@ namespace Wifi.PlayListEditor.Repositories
             IBasePlaylist playlist = parser.GetFromStream(stream);
 
             List<string> fileLines = _fileSystem.File.ReadAllLines(playlistFilePath).ToList();
-                              
-            var myPlaylist = new Playlist(fileLines.Where(x => x.StartsWith("#NAME:")).First().Substring("#NAME:".Length),
-                                          fileLines.Where(x => x.StartsWith("#AUTHOR:")).First().Substring("#AUTHOR:".Length),
-                                          DateTime.ParseExact(fileLines.Where(x => x.StartsWith("#CREATEAT:")).First().Substring("#CREATEAT:".Length), "yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+
+            string nameFromFile = String.Empty;
+            string authorFromFile = String.Empty;
+            DateTime dateFromFile = new DateTime(2022,11,15);
+            var paramsSeparator = ':';
+
+
+            //https://learn.microsoft.com/en-in/dotnet/csharp/language-reference/operators/null-coalescing-operator
+            //https://learn.microsoft.com/en-in/dotnet/csharp/language-reference/operators/member-access-operators#null-conditional-operators--and-
+            //https://youtu.be/n3s_apjZzBw
+
+            nameFromFile = fileLines.FirstOrDefault(x => x.Contains("#NAME"))?.Split(paramsSeparator)[1] ?? "No Name";
+            authorFromFile = fileLines.FirstOrDefault(x => x.Contains("#AUTHOR"))?.Split(paramsSeparator)[1] ?? "No Author";
+            dateFromFile = DateTime.ParseExact(fileLines.FirstOrDefault(x => x.Contains("#CREATEAT:"))?.Split(paramsSeparator)[1] ?? DateTime.Today.ToString("yyyy-MM-dd"), "yyyy-MM-dd",CultureInfo.InvariantCulture);
+            
+            var myPlaylist = _playlistFactory.Create(nameFromFile, authorFromFile, dateFromFile);
 
 
             //add items
@@ -75,8 +91,6 @@ namespace Wifi.PlayListEditor.Repositories
                     myPlaylist.Add(item);
                 }
             }
-
-
 
             return myPlaylist;
         }

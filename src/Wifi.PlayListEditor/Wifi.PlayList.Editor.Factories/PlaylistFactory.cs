@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlaylistsNET.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,15 +12,22 @@ using Wifi.PlayListEditor.Types;
 
 namespace Wifi.PlayList.Editor.Factories
 {
-    internal class PlaylistFactory : IPlaylistFactory
+    public class PlaylistFactory : IPlaylistFactory
     {
         public PlaylistFactory()
         {
-
         }
-        public IPlaylist Create(string name, string author)
+
+        public IEnumerable<IStorageDescription> AvailableTypes => new IStorageDescription[]
         {
-            return new Playlist(name, author);
+            new Playlist(),
+
+        };
+
+
+        public IPlaylist Create(string name, string author, DateTime createAt)
+        {
+            return new Playlist(name, author, createAt);
         }
     }
 }

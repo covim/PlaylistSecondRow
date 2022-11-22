@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="M3URepositoryTest.cs" />
+    <Compile Include="RepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -52,7 +52,7 @@
       <Version>3.13.3</Version>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter">
-      <Version>4.3.0</Version>
+      <Version>4.2.1</Version>
     </PackageReference>
     <PackageReference Include="System.IO.Abstractions">
       <Version>17.2.3</Version>

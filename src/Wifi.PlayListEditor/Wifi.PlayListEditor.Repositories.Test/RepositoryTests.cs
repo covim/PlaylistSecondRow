@@ -17,6 +17,7 @@ namespace Wifi.PlayListEditor.Repositories.Test
 {
     [TestFixture(typeof(M3URepository), ".m3u", "M3U Playlist file", "#EXTM3U\r\n#EXTINF:101,Demo Song 1\r\nc:\\testlied1.mp3\r\n#EXTINF:202,Demo Song 2\r\nc:\\testlied2.mp3\r\n#AUTHOR:dj Joe\r\n#NAME:Superliste\r\n#CREATEAT:2022-11-15")]
     [TestFixture(typeof(JsonRepository), ".json", "json Playlist file", "{\"title\":\"Superliste\",\"author\":\"dj Joe\",\"createdAt\":\"2022-11-15\",\"items\":[{\"path\":\"c:\\\\testlied1.mp3\"},{\"path\":\"c:\\\\testlied2.mp3\"}]}")]
+    [TestFixture(typeof(PlsRepository), ".pls", "pls Playlist file", "[playlist]\r\n\r\nFile1=c:\\testlied1.mp3\r\nTitle1=Demo Song 1\r\nLength1=101\r\n\r\nFile2=c:\\testlied2.mp3\r\nTitle2=Demo Song 2\r\nLength2=202\r\n\r\nNumberOfEntries=2\r\n\r\nVersion=2")]
 
     public class RepositoryTests<T> where T : IRepository
     {

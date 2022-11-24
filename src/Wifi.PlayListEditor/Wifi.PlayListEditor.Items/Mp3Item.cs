@@ -57,7 +57,7 @@ namespace Wifi.PlayListEditor.Items
             var tfile = TagLib.File.Create(_path);
 
             _title = tfile.Tag.Title;
-            _artist = tfile.Tag.FirstAlbumArtist;
+            _artist = tfile.Tag.FirstPerformer;
             _duration = tfile.Properties.Duration;
 
             if (tfile.Tag.Pictures != null && tfile.Tag.Pictures.Length > 0)

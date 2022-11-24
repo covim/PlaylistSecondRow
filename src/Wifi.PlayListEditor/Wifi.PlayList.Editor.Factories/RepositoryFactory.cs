@@ -37,7 +37,7 @@ namespace Wifi.PlayList.Editor.Factories
 
         public IRepository Create(string itemPath)
         {
-            if (string.IsNullOrEmpty(itemPath) || _fileSystem.File.Exists(itemPath))
+            if (string.IsNullOrEmpty(itemPath))
             {
                 return null;
             }

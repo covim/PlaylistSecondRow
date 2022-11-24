@@ -11,7 +11,7 @@ using Wifi.PlayListEditor.Types;
 
 namespace Wifi.PlayList.Editor.Factories
 {
-    internal class PlaylistItemFactory : IPlaylistItemFactory
+    public class PlaylistItemFactory : IPlaylistItemFactory
     {
         private IFileSystem _filesystem;
 
@@ -30,7 +30,7 @@ namespace Wifi.PlayList.Editor.Factories
 
         public IPlaylistItem Create(string itemPath)
         {
-            if (string.IsNullOrEmpty(itemPath) || _filesystem.File.Exists(itemPath))
+            if (string.IsNullOrEmpty(itemPath) || !_filesystem.File.Exists(itemPath))
             {
                 return null;
             }

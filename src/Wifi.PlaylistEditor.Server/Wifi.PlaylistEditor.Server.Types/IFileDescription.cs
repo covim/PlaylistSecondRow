@@ -8,14 +8,13 @@ namespace Wifi.PlaylistEditor.Types
 {
     public interface IFileDescription
     {
-        public interface IFileDescription
-        {
-            /// <summary>
-            /// Die Dateiextension die verwendet werden soll für das jeweilige Playlist Format 
-            /// z.B.: *.m3u  (siehe Wikipedia) oder *.mp3 oder oder oder
-            /// </summary>
-            string Extension { get; }
-            string Description { get; }
-        }
+
+        /// <summary>
+        /// Die Dateiextension die verwendet werden soll für das jeweilige Playlist Format 
+        /// z.B.: *.m3u  (siehe Wikipedia) oder *.mp3 oder oder oder
+        /// </summary>
+        string Extension { get; }
+        string Description { get; }
+
     }
 }

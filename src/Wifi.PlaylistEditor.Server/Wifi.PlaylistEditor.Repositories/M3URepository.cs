@@ -6,7 +6,7 @@ using System.IO.Abstractions;
 
 
 
-namespace Wifi.PlayListEditor.Repositories
+namespace Wifi.PlaylistEditor.Repositories
 {
     public class M3URepository : IRepository
     {

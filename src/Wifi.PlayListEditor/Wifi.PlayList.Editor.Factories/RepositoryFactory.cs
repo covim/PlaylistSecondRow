@@ -24,6 +24,7 @@ namespace Wifi.PlayList.Editor.Factories
         {
             _fileSystem = fileSystem;
             _playlistItemFactory = playlistItemFactory;
+            _playlistFactory = playlistFactory;
             _availableTypes = new List<IRepository>()
             {
                 new M3URepository(_fileSystem , _playlistItemFactory, _playlistFactory),

@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -108,9 +110,9 @@ namespace Wifi.PlayListEditor.UI
             {
                 var item = _playlistItemFactory.Create(itemPath);
 
-                if (item == null) 
-                { 
-                    continue; 
+                if (item == null)
+                {
+                    continue;
                 }
 
                 _playlist.Add(item);
@@ -131,7 +133,7 @@ namespace Wifi.PlayListEditor.UI
 
 
             }
-            filter = filter.Substring(0, filter.Length - 1);  
+            filter = filter.Substring(0, filter.Length - 1);
 
             return filter;
         }
@@ -150,18 +152,42 @@ namespace Wifi.PlayListEditor.UI
 
             if (saveFileDialog1.ShowDialog() == DialogResult.Cancel) { return; }
 
-           
+
 
             var repository = _repositoryFactory.Create(saveFileDialog1.FileName);
 
             if (repository == null)
             {
                 MessageBox.Show("Fileformat kann nicht gespeichtert werden!!");
-                
+
                 return;
             }
 
             repository.Save(_playlist, saveFileDialog1.FileName);
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.Cancel) { return; }
+
+            try
+            {
+                var fileName = openFileDialog1.FileName;
+                var repository = _repositoryFactory.Create(fileName);
+                if (_playlist != null) { _playlist.Clear(); }
+                _playlist = repository.Load(fileName);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Da ist was schief gelaufen");
+            }
+            
+
+            UpdatePlaylistInfoView();
+            UpdatePlaylistItemView();
+            EnableEditMenuItems(true);
+
+
         }
     }
 }

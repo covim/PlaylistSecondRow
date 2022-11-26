@@ -64,16 +64,7 @@ namespace Wifi.PlayListEditor.Repositories
 
             var myPlaylist = entity.ToDomain(_playlistItemFactory, _playlistFactory);
 
-            //add items
-            foreach (var item in entity.items)
-            {
-                var newItem = _playlistItemFactory.Create(item.path);
-                if (item.path != null)
-                {
-                    myPlaylist.Add(newItem);
-                }
-            }
-
+            
             return myPlaylist;
         }
 

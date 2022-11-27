@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wifi.PlayListEditor.Types;
-using Wifi.PlayListEditor.Items;
-using System.Web;
-using System.Runtime.CompilerServices;
-using System.IO;
+﻿using System.Globalization;
+using Wifi.PlaylistEditor.Types;
 using PlaylistsNET.Models;
 using PlaylistsNET.Content;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices.ComTypes;
-using System.Globalization;
 
-namespace Wifi.PlayListEditor.Repositories
+
+
+namespace Wifi.PlaylistEditor.Repositories
 {
     public class M3URepository : IRepository
     {
@@ -31,7 +23,6 @@ namespace Wifi.PlayListEditor.Repositories
             _extension = ".m3u";
         }
 
-
         public M3URepository(IPlaylistItemFactory playlistItemFactory, IPlaylistFactory playlistFactory) : this(new FileSystem(), playlistItemFactory, playlistFactory)
         {
             _extension = ".m3u";
@@ -41,14 +32,11 @@ namespace Wifi.PlayListEditor.Repositories
 
         public string Description => "M3U Playlist file";
 
-
         public string Extension
         {
             get { return _extension; }
             //set { _extension = value; }
         }
-
-
 
         public IPlaylist Load(string playlistFilePath)
         {
@@ -66,7 +54,7 @@ namespace Wifi.PlayListEditor.Repositories
 
             string nameFromFile = String.Empty;
             string authorFromFile = String.Empty;
-            DateTime dateFromFile = new DateTime(2022,11,15);
+            DateTime dateFromFile = new DateTime(2022, 11, 15);
             var paramsSeparator = ':';
 
 
@@ -76,9 +64,7 @@ namespace Wifi.PlayListEditor.Repositories
 
             nameFromFile = fileLines.FirstOrDefault(x => x.Contains("#NAME"))?.Split(paramsSeparator)[1] ?? "No Name";
             authorFromFile = fileLines.FirstOrDefault(x => x.Contains("#AUTHOR"))?.Split(paramsSeparator)[1] ?? "No Author";
-            dateFromFile = DateTime.ParseExact(fileLines.FirstOrDefault(x => x.Contains("#CREATEAT:"))?.Split(paramsSeparator)[1] ?? DateTime.Today.ToString("yyyy-MM-dd"), "yyyy-MM-dd",CultureInfo.InvariantCulture);
-
-            
+            dateFromFile = DateTime.ParseExact(fileLines.FirstOrDefault(x => x.Contains("#CREATEAT:"))?.Split(paramsSeparator)[1] ?? DateTime.Today.ToString("yyyy-MM-dd"), "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             var myPlaylist = _playlistFactory.Create(nameFromFile, authorFromFile, dateFromFile);
 
@@ -135,7 +121,7 @@ namespace Wifi.PlayListEditor.Repositories
             {
                 return;
             }
-            
+
 
         }
     }

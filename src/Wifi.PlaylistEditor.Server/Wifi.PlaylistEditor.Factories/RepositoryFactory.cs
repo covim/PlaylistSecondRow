@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Wifi.PlayListEditor.Repositories;
-using Wifi.PlayListEditor.Types;
+using Wifi.PlaylistEditor.Repositories;
+using Wifi.PlaylistEditor.Types;
 
-namespace Wifi.PlayList.Editor.Factories
+namespace Wifi.PlaylistEditor.Factories
 {
     public class RepositoryFactory : IRepositoryFactory
     {

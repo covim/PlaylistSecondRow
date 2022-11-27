@@ -1,18 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using Wifi.PlayListEditor.Repositories.Json;
-using Wifi.PlayListEditor.Types;
-using static System.Net.Mime.MediaTypeNames;
+using Wifi.PlaylistEditor.Types;
+using Wifi.PlaylistEditor.Repositories.Json;
 
-namespace Wifi.PlayListEditor.Repositories
+
+namespace Wifi.PlaylistEditor.Repositories
 {
     public class JsonRepository : IRepository
     {
@@ -64,7 +57,16 @@ namespace Wifi.PlayListEditor.Repositories
 
             var myPlaylist = entity.ToDomain(_playlistItemFactory, _playlistFactory);
 
-            
+            //add items
+            foreach (var item in entity.items)
+            {
+                var newItem = _playlistItemFactory.Create(item.path);
+                if (item.path != null)
+                {
+                    myPlaylist.Add(newItem);
+                }
+            }
+
             return myPlaylist;
         }
 
@@ -96,3 +98,4 @@ namespace Wifi.PlayListEditor.Repositories
 
     }
 }
+

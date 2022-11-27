@@ -189,5 +189,20 @@ namespace Wifi.PlayListEditor.UI
 
 
         }
+
+        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           if( lst_itemView.SelectedItems == null) { return; }
+
+            foreach (ListViewItem item in lst_itemView.SelectedItems)
+            {
+                var playlistItem = item.Tag;
+                _playlist.Remove((IPlaylistItem)playlistItem);
+
+            }
+
+            UpdatePlaylistInfoView();
+            UpdatePlaylistItemView();
+        }
     }
 }

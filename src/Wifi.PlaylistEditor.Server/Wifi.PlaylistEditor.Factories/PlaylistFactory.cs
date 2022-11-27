@@ -23,7 +23,6 @@ namespace Wifi.PlaylistEditor.Factories
         public IEnumerable<IStorageDescription> AvailableTypes => new IStorageDescription[]
         {
             new Playlist(),
-
         };
 
 

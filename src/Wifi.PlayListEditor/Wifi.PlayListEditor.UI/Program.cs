@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Wifi.PlayList.Editor.Factories;
+using Wifi.PlayListEditor.Types;
 
 namespace Wifi.PlayListEditor.UI
 {
@@ -16,7 +19,21 @@ namespace Wifi.PlayListEditor.UI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frm_Main());
+
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<frm_NewPlaylist>().As<INewPlaylistDataProvider>();
+            //builder.RegisterType<DummyDataPrivider>().As<INewPlaylistDataProvider>();
+            builder.RegisterType<PlaylistFactory>().As<IPlaylistFactory>();
+            builder.RegisterType<PlaylistItemFactory>().As<IPlaylistItemFactory>();
+            builder.RegisterType<RepositoryFactory>().As<IRepositoryFactory>();
+            builder.RegisterType<frm_Main>();
+
+            var container = builder.Build();
+
+            var mainForm = container.Resolve<frm_Main>();
+
+            Application.Run(mainForm);
         }
     }
 }

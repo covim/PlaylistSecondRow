@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Wifi.PlayListEditor.Items;
 using Wifi.PlayListEditor.Types;
 
-namespace Wifi.PlayList.Editor.Factories
+namespace Wifi.PlayList.Editor.Factories //könnte man mit MEF auch Dynamisch gestalten
 {
     public class PlaylistItemFactory : IPlaylistItemFactory
     {

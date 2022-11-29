@@ -11,6 +11,6 @@ namespace Wifi.PlayListEditor.Types
        
         IEnumerable<IStorageDescription> AvailableTypes { get; }
 
-        IPlaylist Create(string author, string name, DateTime createAt);
+        IPlaylist Create(string name, string author, DateTime createAt);
     }
 }

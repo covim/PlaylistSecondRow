@@ -1,19 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Wifi.PlayList.Editor.Factories;
 using Wifi.PlayListEditor.Types;
-using Wifi.PlayListEditor.UI.Properties;
+
 
 namespace Wifi.PlayListEditor.UI
 {
@@ -25,13 +14,21 @@ namespace Wifi.PlayListEditor.UI
         private IPlaylistFactory _playlistFactory;
         private IPlaylistItemFactory _playlistItemFactory;
         private IRepositoryFactory _repositoryFactory;
-        public frm_Main()
+
+        //für den Container im Programm.cs müssen die benötigten typen im Construktor sein
+        public frm_Main(INewPlaylistDataProvider newPlaylistDataProvider,
+                     IPlaylistFactory playlistFactory,
+                     IPlaylistItemFactory playlistItemFactory,
+                     IRepositoryFactory repositoryFactory)
         {
+           
+            _newPlaylistDataProvider = newPlaylistDataProvider;
+            _playlistFactory = playlistFactory;
+            _playlistItemFactory = playlistItemFactory;
+            _repositoryFactory = repositoryFactory;
+
             InitializeComponent();
-            _newPlaylistDataProvider = new frm_NewPlaylist();
-            _playlistFactory = new PlaylistFactory();
-            _playlistItemFactory = new PlaylistItemFactory();
-            _repositoryFactory = new RepositoryFactory(_playlistItemFactory, _playlistFactory);
+
         }
 
         private void frm_Main_Load(object sender, EventArgs e)
@@ -41,7 +38,6 @@ namespace Wifi.PlayListEditor.UI
 
             EnableEditMenuItems(false);
         }
-
 
         private void UpdatePlaylistItemView()
         {
@@ -136,7 +132,7 @@ namespace Wifi.PlayListEditor.UI
         {
             if (_newPlaylistDataProvider.StartDialog() == DialogResult.Cancel) { return; }
 
-            _playlist = _playlistFactory.Create(_newPlaylistDataProvider.Author, _newPlaylistDataProvider.Title, DateTime.Now);
+            _playlist = _playlistFactory.Create(_newPlaylistDataProvider.Title, _newPlaylistDataProvider.Author, DateTime.Now);
 
             EnableEditMenuItems(true);
             UpdatePlaylistInfoView();

@@ -2,7 +2,7 @@
 
 namespace Wifi.PlayListEditor.UI
 {
-    internal interface INewPlaylistDataProvider
+    public interface INewPlaylistDataProvider
     {
         string Title { get; }
         string Author { get; }

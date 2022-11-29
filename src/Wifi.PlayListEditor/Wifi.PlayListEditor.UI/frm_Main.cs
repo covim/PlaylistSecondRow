@@ -42,29 +42,6 @@ namespace Wifi.PlayListEditor.UI
             EnableEditMenuItems(false);
         }
 
-        private void EnableEditMenuItems(bool isEnable)
-        {
-            saveToolStripMenuItem.Enabled = isEnable;
-            itemsToolStripMenuItem.Enabled = isEnable;
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (_newPlaylistDataProvider.StartDialog() == DialogResult.Cancel) { return; }
-
-            _playlist = _playlistFactory.Create(_newPlaylistDataProvider.Author, _newPlaylistDataProvider.Title, DateTime.Now);
-
-            EnableEditMenuItems(true);
-            UpdatePlaylistInfoView();
-            UpdatePlaylistItemView();
-
-
-        }
 
         private void UpdatePlaylistItemView()
         {
@@ -99,10 +76,80 @@ namespace Wifi.PlayListEditor.UI
             lbl_playlistInfo.Text = $"{_playlist.Name} [{_playlist.Duration.ToString(@"hh\:mm\:ss")}] @ {_playlist.Author}";
         }
 
+        private void InitFileDialog(FileDialog fileDialog, IEnumerable<IFileDescription> availableTypes, string title, string dafaultFileName)
+        {
+            fileDialog.Title = title;
+            fileDialog.FileName = dafaultFileName;
+            fileDialog.Filter = CreateFilterText(availableTypes);
+        }
+
+        private string CreateFilterText(IEnumerable<IFileDescription> availableTypes)
+        {
+            string filter = string.Empty;
+
+            string allTypesFilter = "All Types | ";
+            foreach (var type in availableTypes)
+            {
+                filter += $"{type.Description}|*{type.Extension}|";
+                allTypesFilter += $"*{type.Extension};";
+
+
+            }
+            filter += allTypesFilter;
+            filter = filter.Substring(0, filter.Length - 1);
+
+            return filter;
+        }
+
+        private void UpdateItemDetailsView(IPlaylistItem playlistitem)
+        {
+            //Artist: Peter Coolplayer
+            //Path: c:\myMusic\firstSong.mp3
+            //Duration: 00:03:25
+            if (playlistitem != null)
+            {
+                lbl_itemDetailinfo.Text = $"Artist: {playlistitem.Artist} - {playlistitem.Title}\n" +
+                                $"Path: {playlistitem.Path}\n" +
+                                $"Duration: {playlistitem.Duration.ToString(@"hh\:mm\:ss")}";
+            }
+            else
+            {
+                lbl_itemDetailinfo.Text = string.Empty ;
+            }
+            
+        }
+
+        private void EnableEditMenuItems(bool isEnable)
+        {
+            saveToolStripMenuItem.Enabled = isEnable;
+            itemsToolStripMenuItem.Enabled = isEnable;
+        }
+
+
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_newPlaylistDataProvider.StartDialog() == DialogResult.Cancel) { return; }
+
+            _playlist = _playlistFactory.Create(_newPlaylistDataProvider.Author, _newPlaylistDataProvider.Title, DateTime.Now);
+
+            EnableEditMenuItems(true);
+            UpdatePlaylistInfoView();
+            UpdatePlaylistItemView();
+
+
+        }
+
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.Multiselect = true;
-            openFileDialog1.Filter = CreateFilterText(_playlistItemFactory.AvailableTypes);
+            InitFileDialog(openFileDialog1, _playlistItemFactory.AvailableTypes, "select new item(s)", "");
+           
 
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel) { return; }
 
@@ -124,20 +171,6 @@ namespace Wifi.PlayListEditor.UI
             UpdatePlaylistItemView();
         }
 
-        private string CreateFilterText(IEnumerable<IFileDescription> availableTypes)
-        {
-            string filter = string.Empty;
-            foreach (var type in availableTypes)
-            {
-                filter += $"{type.Description}|*{type.Extension}|";
-
-
-            }
-            filter = filter.Substring(0, filter.Length - 1);
-
-            return filter;
-        }
-
         private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _playlist.Clear();
@@ -148,7 +181,8 @@ namespace Wifi.PlayListEditor.UI
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.Filter = CreateFilterText(_repositoryFactory.AvailableTypes);
+            InitFileDialog(saveFileDialog1, _repositoryFactory.AvailableTypes, "Playlist speichern", _playlist.Name);
+            
 
             if (saveFileDialog1.ShowDialog() == DialogResult.Cancel) { return; }
 
@@ -168,14 +202,19 @@ namespace Wifi.PlayListEditor.UI
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            InitFileDialog(openFileDialog1, _repositoryFactory.AvailableTypes, "Select Playlist", "");
+            openFileDialog1.Multiselect = false;
+
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel) { return; }
 
             try
             {
-                var fileName = openFileDialog1.FileName;
-                var repository = _repositoryFactory.Create(fileName);
-                if (_playlist != null) { _playlist.Clear(); }
-                _playlist = repository.Load(fileName);
+                
+                var repository = _repositoryFactory.Create(openFileDialog1.FileName);
+                if (repository != null)
+                {
+                    _playlist = repository.Load(openFileDialog1.FileName);
+                }
             }
             catch (Exception)
             {
@@ -192,7 +231,7 @@ namespace Wifi.PlayListEditor.UI
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           if( lst_itemView.SelectedItems == null) { return; }
+           if( lst_itemView.SelectedItems == null || lst_itemView.SelectedItems.Count == 0) { return; }
 
             foreach (ListViewItem item in lst_itemView.SelectedItems)
             {
@@ -205,5 +244,19 @@ namespace Wifi.PlayListEditor.UI
             UpdatePlaylistInfoView();
             UpdatePlaylistItemView();
         }
+
+        private void lst_itemView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void lst_itemView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (e.Item.Tag is IPlaylistItem playlistitem)
+            {
+                UpdateItemDetailsView(e.IsSelected ? playlistitem : null);
+            }
+        }
+
     }
 }

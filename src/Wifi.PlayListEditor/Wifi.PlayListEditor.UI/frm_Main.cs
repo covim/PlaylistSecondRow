@@ -196,9 +196,10 @@ namespace Wifi.PlayListEditor.UI
 
             foreach (ListViewItem item in lst_itemView.SelectedItems)
             {
-                var playlistItem = item.Tag;
-                _playlist.Remove((IPlaylistItem)playlistItem);
-
+                if (item.Tag is IPlaylistItem playlistItem)
+                {
+                    _playlist.Remove(playlistItem);
+                }                
             }
 
             UpdatePlaylistInfoView();

@@ -1,6 +1,6 @@
 ﻿namespace Wifi.PlayList.Editor.DbRepositories
 {
-    public class Class1
+    public class MongoDbRepository
     {
 
     }

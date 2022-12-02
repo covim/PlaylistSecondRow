@@ -8,6 +8,7 @@ namespace Wifi.PlaylistEditor.Types
 {
     public interface IPlaylist : IStorageDescription
     {
+        Guid Id { get; }
         string Name { get; set; }
         string Author { get; set; }
         DateTime CreateAt { get; }

@@ -19,6 +19,13 @@ namespace Wifi.PlaylistEditor.Types
         private bool _allowDuplicates;
         private string _storageLocation = "local";
         private string _description = "local saved Playlist";
+        private Guid _id;
+
+        public Guid Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
 
 
         public Playlist() { }
@@ -32,6 +39,7 @@ namespace Wifi.PlaylistEditor.Types
             _createAt = createAt;
             _allowDuplicates = true;
             _itemList = new List<IPlaylistItem>();
+            _id = Guid.NewGuid();
         }
 
 

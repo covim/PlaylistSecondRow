@@ -67,6 +67,22 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         }
 
         [Test]
+        public async Task CreateAsync_null()
+        {
+            //arrange
+            PlaylistEntity entity = null;
+            
+            //act
+            await _fixture.CreateAsync(entity);
+
+            //assert
+            var count = _fixture.PlaylistCollection.CountDocuments(x => true, default);
+            Assert.That(count, Is.EqualTo(0));
+
+
+        }
+
+        [Test]
         public async Task GetAsync()
         {
             //arrange
@@ -100,6 +116,21 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
             //assert
 
             Assert.That(playlistItemsFromDb.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task GetAsync_EmptyDb()
+        {
+            //arrange
+
+
+            //act
+            var playlistItemsFromDb = new List<PlaylistEntity>();
+            playlistItemsFromDb = await _fixture.GetAsync();
+
+            //assert
+
+            Assert.That(playlistItemsFromDb.Count, Is.EqualTo(0));
         }
 
         [Test]
@@ -165,6 +196,84 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         }
 
         [Test]
+        public async Task GetAsync_idNull()
+        {
+            //arrange
+            var entity1 = new PlaylistEntity
+            {
+                Author = "DJ Gustl",
+                Title = "Superhits",
+                CreatedAt = "20221201",
+                Id = Guid.NewGuid().ToString(),
+                Items = new List<PlaylistItemEntity>
+                {
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong1.mp3"
+                    },
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong2.mp3"
+                    }
+                }
+            };
+
+            await _fixture.CreateAsync(entity1);
+
+            string fakeid = null;
+
+            //act
+            var playlistItemFromDb = new PlaylistEntity();
+            playlistItemFromDb = await _fixture.GetAsync(fakeid);
+
+
+            //assert
+            Assert.That(playlistItemFromDb, Is.EqualTo(null));
+
+        }
+
+        [Test]
+        public async Task GetAsync_idEmpty()
+        {
+            //arrange
+            var entity1 = new PlaylistEntity
+            {
+                Author = "DJ Gustl",
+                Title = "Superhits",
+                CreatedAt = "20221201",
+                Id = Guid.NewGuid().ToString(),
+                Items = new List<PlaylistItemEntity>
+                {
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong1.mp3"
+                    },
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong2.mp3"
+                    }
+                }
+            };
+
+            await _fixture.CreateAsync(entity1);
+
+            string fakeid = string.Empty;
+
+            //act
+            var playlistItemFromDb = new PlaylistEntity();
+            playlistItemFromDb = await _fixture.GetAsync(fakeid);
+
+
+            //assert
+            Assert.That(playlistItemFromDb, Is.EqualTo(null));
+
+        }
+
+        [Test]
         public async Task RemoveAsync()
         {
             //arrange
@@ -222,6 +331,132 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
 
             //assert
             Assert.That(playlistItemsFromDb.Count, Is.EqualTo(1));
+
+        }
+
+        [Test]
+        public async Task RemoveAsync_idNull()
+        {
+            //arrange
+            var entity1 = new PlaylistEntity
+            {
+                Author = "DJ Gustl",
+                Title = "Superhits",
+                CreatedAt = "20221201",
+                Id = Guid.NewGuid().ToString(),
+                Items = new List<PlaylistItemEntity>
+                {
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong1.mp3"
+                    },
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong2.mp3"
+                    }
+                }
+            };
+            var entity2 = new PlaylistEntity
+            {
+                Author = "DJ Rudl",
+                Title = "Perfecthits",
+                CreatedAt = "20221201",
+                Id = Guid.NewGuid().ToString(),
+                Items = new List<PlaylistItemEntity>
+                {
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/PerfectSong1.mp3"
+                    },
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/PerfectSong2.mp3"
+                    }
+                }
+            };
+
+            await _fixture.CreateAsync(entity1);
+            await _fixture.CreateAsync(entity2);
+
+            string fakeid = null;
+
+            //act
+
+            await _fixture.RemoveAsync(fakeid);
+
+            var playlistItemsFromDb = new List<PlaylistEntity>();
+            playlistItemsFromDb = await _fixture.GetAsync();
+
+
+            //assert
+            Assert.That(playlistItemsFromDb.Count, Is.EqualTo(2));
+
+        }
+
+        [Test]
+        public async Task RemoveAsync_idEmpty()
+        {
+            //arrange
+            var entity1 = new PlaylistEntity
+            {
+                Author = "DJ Gustl",
+                Title = "Superhits",
+                CreatedAt = "20221201",
+                Id = Guid.NewGuid().ToString(),
+                Items = new List<PlaylistItemEntity>
+                {
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong1.mp3"
+                    },
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/superSong2.mp3"
+                    }
+                }
+            };
+            var entity2 = new PlaylistEntity
+            {
+                Author = "DJ Rudl",
+                Title = "Perfecthits",
+                CreatedAt = "20221201",
+                Id = Guid.NewGuid().ToString(),
+                Items = new List<PlaylistItemEntity>
+                {
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/PerfectSong1.mp3"
+                    },
+                    new PlaylistItemEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Path = @"/app/uploads/PerfectSong2.mp3"
+                    }
+                }
+            };
+
+            await _fixture.CreateAsync(entity1);
+            await _fixture.CreateAsync(entity2);
+
+            string fakeid = string.Empty;
+
+            //act
+
+            await _fixture.RemoveAsync(fakeid);
+
+            var playlistItemsFromDb = new List<PlaylistEntity>();
+            playlistItemsFromDb = await _fixture.GetAsync();
+
+
+            //assert
+            Assert.That(playlistItemsFromDb.Count, Is.EqualTo(2));
 
         }
 

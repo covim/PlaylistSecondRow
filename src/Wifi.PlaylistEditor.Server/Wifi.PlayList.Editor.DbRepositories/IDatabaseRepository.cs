@@ -1,4 +1,5 @@
-﻿using Wifi.PlayList.Editor.DbRepositories.MongoDbEntities;
+﻿using MongoDB.Driver;
+using Wifi.PlayList.Editor.DbRepositories.MongoDbEntities;
 
 namespace Wifi.PlayList.Editor.DbRepositories
 {
@@ -17,6 +18,8 @@ namespace Wifi.PlayList.Editor.DbRepositories
         Task UpdateAsync(string id, T updatedPlayist);
 
         Task RemoveAsync(string id);
+
+        IMongoCollection<PlaylistEntity> PlaylistCollection { get; }
 
 
     }

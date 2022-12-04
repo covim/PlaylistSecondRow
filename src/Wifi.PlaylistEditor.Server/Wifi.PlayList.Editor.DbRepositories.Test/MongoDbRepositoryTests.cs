@@ -25,16 +25,28 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
             _fixture = new MongoDbRepository(options);
         }
 
-        [OneTimeTearDown]
+        //[OneTimeTearDown] //wird nur einmal nach allen tests ausgeführt
+        [TearDown] //wird nach jedem test ausgeführt
         public void Clear()
         {
-            _fixture.PlaylistCollection.DeleteMany(x => true, default);
+            var playlists = _fixture.GetAsync().Result;
+            foreach (PlaylistEntity playlist in playlists)
+            {
+                _fixture.RemoveAsync(playlist.Id).Wait();
+                for (int i = 0; i < 20; i++)
+                {
+
+                    _fixture.GetAsync().Wait();
+
+                }
+            }
         }
 
         [Test]
         public async Task CreateAsync()
         {
             //arrange
+            
             var entity = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -58,10 +70,11 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
 
             //act
             await _fixture.CreateAsync(entity);
+            var playlistItemsFromDb = new List<PlaylistEntity>();
+            playlistItemsFromDb = await _fixture.GetAsync();
 
-            //assert
-            var count = _fixture.PlaylistCollection.CountDocuments(x => true, default);
-            Assert.That(count, Is.EqualTo(1));
+            //assert           
+            Assert.That(playlistItemsFromDb.Count, Is.EqualTo(1));
 
 
         }
@@ -70,14 +83,16 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task CreateAsync_null()
         {
             //arrange
+            
             PlaylistEntity entity = null;
             
             //act
             await _fixture.CreateAsync(entity);
+            var playlistItemsFromDb = new List<PlaylistEntity>();
+            playlistItemsFromDb = await _fixture.GetAsync();
 
             //assert
-            var count = _fixture.PlaylistCollection.CountDocuments(x => true, default);
-            Assert.That(count, Is.EqualTo(0));
+            Assert.That(playlistItemsFromDb.Count, Is.EqualTo(0));
 
 
         }
@@ -86,6 +101,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task GetAsync()
         {
             //arrange
+            
             var entity = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -122,7 +138,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task GetAsync_EmptyDb()
         {
             //arrange
-
+            
 
             //act
             var playlistItemsFromDb = new List<PlaylistEntity>();
@@ -137,6 +153,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task GetAsyncMitId()
         {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -199,6 +216,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task GetAsync_idNull()
         {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -238,6 +256,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task GetAsync_idEmpty()
         {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -277,6 +296,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task RemoveAsync()
         {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -338,6 +358,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task RemoveAsync_idNull()
         {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -401,6 +422,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
         public async Task RemoveAsync_idEmpty()
         {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",
@@ -462,8 +484,9 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
 
         [Test]
         public async Task UpdateAsync()
-        {   
+        {
             //arrange
+            
             var entity1 = new PlaylistEntity
             {
                 Author = "DJ Gustl",

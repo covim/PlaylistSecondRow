@@ -6,7 +6,7 @@ namespace Wifi.PlayList.Editor.DbRepositories
 {
     public class MongoDbRepository : IDatabaseRepository<PlaylistEntity>
     {
-        public IMongoCollection<PlaylistEntity> _playlistsCollection;
+        private IMongoCollection<PlaylistEntity> _playlistsCollection;
 
         public MongoDbRepository(IOptions<PlaylistDbSettings> playlistDbSettings)
         {
@@ -21,12 +21,6 @@ namespace Wifi.PlayList.Editor.DbRepositories
 
             _playlistsCollection = mongoDatabase.GetCollection<PlaylistEntity>(playlistDbSettings.Value.CollectionName);
         }
-
-        public IMongoCollection<PlaylistEntity> PlaylistCollection
-        {
-            get { return _playlistsCollection; }
-        }
-       
 
         public async Task CreateAsync(PlaylistEntity newPlaylist)
         {

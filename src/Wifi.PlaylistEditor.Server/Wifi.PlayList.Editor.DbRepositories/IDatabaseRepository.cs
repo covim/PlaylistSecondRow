@@ -19,7 +19,6 @@ namespace Wifi.PlayList.Editor.DbRepositories
 
         Task RemoveAsync(string id);
 
-        IMongoCollection<PlaylistEntity> PlaylistCollection { get; }
 
 
     }

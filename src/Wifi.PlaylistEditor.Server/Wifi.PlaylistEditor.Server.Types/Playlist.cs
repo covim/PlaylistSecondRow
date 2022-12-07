@@ -42,6 +42,16 @@ namespace Wifi.PlaylistEditor.Types
             _id = Guid.NewGuid();
         }
 
+        public Playlist(Guid id, string name, string author, DateTime createAt)
+        {
+            _name = name;
+            _author = author;
+            _createAt = createAt;
+            _allowDuplicates = true;
+            _itemList = new List<IPlaylistItem>();
+            _id = id;
+        }
+
 
         public string Name
         {

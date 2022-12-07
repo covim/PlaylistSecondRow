@@ -9,6 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Wifi.PlayList.Editor.DbRepositories\Wifi.PlayList.Editor.DbRepositories.csproj" />
+    <ProjectReference Include="..\Wifi.PlaylistEditor.Factories\Wifi.PlaylistEditor.Factories.csproj" />
+    <ProjectReference Include="..\Wifi.PlaylistEditor.Server.Types\Wifi.PlaylistEditor.Types.csproj" />
   </ItemGroup>
 
 </Project>

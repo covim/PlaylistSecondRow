@@ -30,5 +30,10 @@ namespace Wifi.PlaylistEditor.Factories
         {
             return new Playlist(name, author, createAt);
         }
+
+        public IPlaylist Create(Guid id, string name, string author, DateTime createAt)
+        {
+            return new Playlist(id, name, author, createAt);
+        }
     }
 }

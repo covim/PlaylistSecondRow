@@ -11,5 +11,10 @@ namespace Wifi.PlayListEditor.Service.Mappings
 
             return new PlaylistList { Playlists = PlaylistInfo.ToList() };
         }
+
+        public static Models.Playlist ToEntity(this IPlaylist domainObject)
+        {
+            return new Models.Playlist { Id = domainObject.Id.ToString(), Name = domainObject.Name };
+        }
     }
 }

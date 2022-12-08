@@ -93,7 +93,7 @@ namespace Wifi.PlayListEditor.Service.Controllers
         [HttpGet]
         [Route("playlists/{playlistId}")]
         [ValidateModelState]
-        public virtual IActionResult PlaylistsPlaylistIdGet([FromRoute][Required] string playlistId)
+        public async Task<IActionResult> PlaylistsPlaylistIdGet([FromRoute][Required] string playlistId)
         {
             //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(201, default(Playlist));
@@ -103,13 +103,13 @@ namespace Wifi.PlayListEditor.Service.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
-            string exampleJson = null;
-            exampleJson = "{\n  \"duration\" : 680,\n  \"name\" : \"MyMegaHitsPlaylist_2022\",\n  \"id\" : \"4979875A-A40E-4CC6-99AB-CB5CE62DA97C\",\n  \"items\" : [ {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  }, {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  } ],\n  \"autor\" : \"DJ Gandalf\",\n  \"dateOfCreation\" : \"2019-05-17T00:00:00.000+00:00\"\n}";
 
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<Playlist>(exampleJson)
-            : default(Playlist);            //TODO: Change the data returned
-            return new ObjectResult(example);
+
+            var domainObject = await _playlistService.GetPlaylist(playlistId);
+
+            var entity = domainObject.ToEntity();
+
+            return new ObjectResult(entity);
         }
 
         /// <summary>

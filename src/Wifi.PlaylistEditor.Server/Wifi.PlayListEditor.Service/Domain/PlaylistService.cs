@@ -1,4 +1,5 @@
-﻿using Wifi.PlayList.Editor.DbRepositories;
+﻿using System.Globalization;
+using Wifi.PlayList.Editor.DbRepositories;
 using Wifi.PlayList.Editor.DbRepositories.MongoDbEntities;
 using Wifi.PlaylistEditor.Types;
 using Wifi.PlayListEditor.Service.Mappings;
@@ -28,6 +29,17 @@ namespace Wifi.PlayListEditor.Service.Domain
             }
 
             return playlistEntities.ToDomain(_playlistFactory, _playlistItemFactory);
+        }
+
+        public async Task<IPlaylist> GetPlaylist(string id)
+        {
+            var playlistEntity = await _databaseRepository.GetAsync(id);
+            if (playlistEntity == null)
+            {
+                return null;
+            }
+
+            return playlistEntity.ToDomain(_playlistFactory, _playlistItemFactory);
         }
     }
 }

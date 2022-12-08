@@ -5,5 +5,6 @@ namespace Wifi.PlayListEditor.Service.Domain
     public interface IPlaylistService
     {
         Task<IEnumerable<IPlaylist>> GetAllPlaylists();
+        Task <IPlaylist> GetPlaylist(string id);
     }
 }

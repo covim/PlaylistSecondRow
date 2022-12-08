@@ -45,11 +45,6 @@ namespace Wifi.PlayListEditor.Service.Controllers
         [ValidateModelState]
         public async Task<IActionResult> PlaylistsGet()
         {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201, default(PlaylistList));
-
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
             var domainObjects = await _playlistService.GetAllPlaylists();
 
             var entity = domainObjects.ToEntity();
@@ -57,30 +52,6 @@ namespace Wifi.PlayListEditor.Service.Controllers
             return new ObjectResult(entity);
         }
 
-        /// <summary>
-        /// Deletes a playlist
-        /// </summary>
-        /// <remarks>delete a playlist</remarks>
-        /// <param name="playlistId">ID of playlist to delete</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="400">Invalid playlist value</response>
-        /// <response code="404">Playlist not found</response>
-        [HttpDelete]
-        [Route("playlists/{playlistId}")]
-        [ValidateModelState]
-        public virtual IActionResult PlaylistsPlaylistIdDelete([FromRoute][Required] string playlistId)
-        {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201);
-
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
-
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
-
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Returns playlist by ID
@@ -95,22 +66,57 @@ namespace Wifi.PlayListEditor.Service.Controllers
         [ValidateModelState]
         public async Task<IActionResult> PlaylistsPlaylistIdGet([FromRoute][Required] string playlistId)
         {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201, default(Playlist));
-
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
-
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
-
-
             var domainObject = await _playlistService.GetPlaylist(playlistId);
 
             var entity = domainObject.ToEntity();
 
             return new ObjectResult(entity);
         }
+
+
+        /// <summary>
+        /// Deletes a playlist
+        /// </summary>
+        /// <remarks>delete a playlist</remarks>
+        /// <param name="playlistId">ID of playlist to delete</param>
+        /// <response code="201">successful operation</response>
+        /// <response code="400">Invalid playlist value</response>
+        /// <response code="404">Playlist not found</response>
+        [HttpDelete]
+        [Route("playlists/{playlistId}")]
+        [ValidateModelState]
+        public async Task<IActionResult> PlaylistsPlaylistIdDelete([FromRoute][Required] string playlistId)
+        {
+            var domainObject = await _playlistService.DeletePlaylist(playlistId);  // GetPlaylist(playlistId);
+            return StatusCode(201);
+        }
+
+        /// <summary>
+        /// Creates a new playlist with data provided in body
+        /// </summary>
+        /// <param name="body">Creates new playlist with provided data in body.</param>
+        /// <response code="201">successful operation</response>
+        /// <response code="405">Invalid input</response>
+        [HttpPost]
+        [Route("playlists")]
+        [ValidateModelState]
+        public virtual IActionResult PlaylistsPost([FromBody] PlaylistPost body)
+        {
+            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(201, default(PlaylistLink));
+
+            //TODO: Uncomment the next line to return response 405 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(405);
+            string exampleJson = null;
+            exampleJson = "{\n  \"href\" : \"http://localhost/playlistapi/playlists/4979875A-A40E-4CC6-99AB-CB5CE62DA97C\"\n}";
+
+            var example = exampleJson != null
+            ? JsonConvert.DeserializeObject<PlaylistLink>(exampleJson)
+            : default(PlaylistLink);            //TODO: Change the data returned
+            return new ObjectResult(example);
+        }
+
+
 
         /// <summary>
         /// Updates playlist items by ID
@@ -143,29 +149,6 @@ namespace Wifi.PlayListEditor.Service.Controllers
             return new ObjectResult(example);
         }
 
-        /// <summary>
-        /// Creates a new playlist with data provided in body
-        /// </summary>
-        /// <param name="body">Creates new playlist with provided data in body.</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="405">Invalid input</response>
-        [HttpPost]
-        [Route("playlists")]
-        [ValidateModelState]
-        public virtual IActionResult PlaylistsPost([FromBody] PlaylistPost body)
-        {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201, default(PlaylistLink));
 
-            //TODO: Uncomment the next line to return response 405 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(405);
-            string exampleJson = null;
-            exampleJson = "{\n  \"href\" : \"http://localhost/playlistapi/playlists/4979875A-A40E-4CC6-99AB-CB5CE62DA97C\"\n}";
-
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<PlaylistLink>(exampleJson)
-            : default(PlaylistLink);            //TODO: Change the data returned
-            return new ObjectResult(example);
-        }
     }
 }

@@ -41,5 +41,14 @@ namespace Wifi.PlayListEditor.Service.Domain
 
             return playlistEntity.ToDomain(_playlistFactory, _playlistItemFactory);
         }
+
+        public async Task<Object> DeletePlaylist(string id)
+        {
+            await _databaseRepository.RemoveAsync(id);
+            
+            return null;
+        }
+
+
     }
 }

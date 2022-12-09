@@ -14,7 +14,7 @@ namespace Wifi.PlayListEditor.Service.Mappings
             return entities.Select(x => playlistFactory.Create(Guid.Parse(x.Id), 
                                                                 x.Author, 
                                                                 x.Title, 
-                                                                DateTime.ParseExact(x.CreatedAt, "yyyyMMdd", CultureInfo.InvariantCulture)));
+                                                                DateTime.ParseExact(x.CreatedAt, "yyyy-MM-dd", CultureInfo.InvariantCulture)));
         }
 
         public static IPlaylist ToDomain(this PlaylistEntity entity,
@@ -24,7 +24,7 @@ namespace Wifi.PlayListEditor.Service.Mappings
             return playlistFactory.Create(Guid.Parse(entity.Id),
                                           entity.Author,
                                           entity.Title,
-                                          DateTime.ParseExact(entity.CreatedAt, "yyyyMMdd", CultureInfo.InvariantCulture));
+                                          DateTime.ParseExact(entity.CreatedAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
         }
 
 

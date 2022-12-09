@@ -49,6 +49,28 @@ namespace Wifi.PlaylistEditor.Factories
                     return null;
 
             }
+        }
+
+        public IPlaylistItem Create(string itemPath, bool noFilesystem)
+        {
+            if (string.IsNullOrEmpty(itemPath))
+            {
+                return null;
+            }
+
+            var extension = Path.GetExtension(itemPath);
+            switch (extension)
+            {
+                case ".mp3":
+                    return new Mp3Item(itemPath, true);
+
+                case ".jpg":
+                    return new ImageItem(itemPath);
+
+                default:
+                    return null;
+
+            }
 
         }
     }

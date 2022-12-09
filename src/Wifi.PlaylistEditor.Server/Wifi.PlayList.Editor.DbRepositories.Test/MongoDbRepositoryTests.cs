@@ -53,7 +53,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
             {
                 Author = "DJ Gustl",
                 Title = "Superhits",
-                CreatedAt = "20221201",
+                CreatedAt = "2022-12-01",
                 Id = Guid.NewGuid().ToString(),
                 Items = new List<PlaylistItemEntity>
                 {

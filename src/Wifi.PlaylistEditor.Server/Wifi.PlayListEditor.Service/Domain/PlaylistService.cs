@@ -49,6 +49,12 @@ namespace Wifi.PlayListEditor.Service.Domain
             return null;
         }
 
+        public async Task<Object> CreatePlaylistAsync(PlaylistEntity playlistEntity)
+        {
+            await _databaseRepository.CreateAsync(playlistEntity);
+            return null;
+        }
+
 
     }
 }

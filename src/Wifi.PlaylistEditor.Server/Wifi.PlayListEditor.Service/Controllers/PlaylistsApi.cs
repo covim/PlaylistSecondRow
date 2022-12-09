@@ -17,6 +17,12 @@ using Wifi.PlayListEditor.Service.Models;
 using Wifi.PlayListEditor.Service.Attributes;
 using Wifi.PlayListEditor.Service.Domain;
 using Wifi.PlayListEditor.Service.Mappings;
+using Wifi.PlaylistEditor.Types;
+using Wifi.PlaylistEditor.Factories;
+using Wifi.PlayList.Editor.DbRepositories;
+using Microsoft.Extensions.Options;
+using Wifi.PlayList.Editor.DbRepositories.MongoDbEntities;
+using TagLib.Ape;
 
 namespace Wifi.PlayListEditor.Service.Controllers
 {
@@ -100,19 +106,51 @@ namespace Wifi.PlayListEditor.Service.Controllers
         [HttpPost]
         [Route("playlists")]
         [ValidateModelState]
-        public virtual IActionResult PlaylistsPost([FromBody] PlaylistPost body)
+        public async Task<IActionResult> PlaylistsPost([FromBody] PlaylistPost body)
         {
             //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(201, default(PlaylistLink));
 
             //TODO: Uncomment the next line to return response 405 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(405);
-            string exampleJson = null;
-            exampleJson = "{\n  \"href\" : \"http://localhost/playlistapi/playlists/4979875A-A40E-4CC6-99AB-CB5CE62DA97C\"\n}";
 
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<PlaylistLink>(exampleJson)
-            : default(PlaylistLink);            //TODO: Change the data returned
+            //var options = Options.Create(new PlaylistDbSettings
+            //{
+            //    ConnectionString = "mongodb://admin:password@localhost:27017",
+            //    DatabaseName = "playlistDb",
+            //    CollectionName = "playlists"
+            //});
+
+            var playlistFactory = new PlaylistFactory();
+            var playlistItemFactory = new PlaylistItemFactory();
+            var playlist = playlistFactory.Create(body.Name, body.Autor, DateTime.Now);
+            foreach (var item in body.Items)
+            {
+                var path = $"{item.Filename}{item.Extension}";
+                var playlistItem = playlistItemFactory.Create(path, true);
+                playlist.Add(playlistItem); 
+            }
+
+            var playlistEntity = new PlaylistEntity();
+            playlistEntity.Items = new List<PlaylistItemEntity>();
+            playlistEntity.Author = playlist.Author;
+            playlistEntity.Title = playlist.Name;
+            playlistEntity.Id = playlist.Id.ToString();
+            playlistEntity.CreatedAt = playlist.CreateAt.ToString("yyyy-MM-dd");
+            foreach (var item in playlist.ItemList)
+            {
+                var playlistItemEntity = new PlaylistItemEntity();
+                playlistItemEntity.Id = item.Id.ToString();
+                playlistItemEntity.Path = item.Path.ToString();
+                playlistEntity.Items.Add(playlistItemEntity);
+                
+            }
+
+            await _playlistService.CreatePlaylistAsync(playlistEntity);
+            
+
+
+            var example = new Object();
             return new ObjectResult(example);
         }
 
@@ -140,12 +178,13 @@ namespace Wifi.PlayListEditor.Service.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
-            string exampleJson = null;
-            exampleJson = "{\n  \"duration\" : 680,\n  \"name\" : \"MyMegaHitsPlaylist_2022\",\n  \"id\" : \"4979875A-A40E-4CC6-99AB-CB5CE62DA97C\",\n  \"items\" : [ {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  }, {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  } ],\n  \"autor\" : \"DJ Gandalf\",\n  \"dateOfCreation\" : \"2019-05-17T00:00:00.000+00:00\"\n}";
+            //string exampleJson = null;
+            //exampleJson = "{\n  \"duration\" : 680,\n  \"name\" : \"MyMegaHitsPlaylist_2022\",\n  \"id\" : \"4979875A-A40E-4CC6-99AB-CB5CE62DA97C\",\n  \"items\" : [ {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  }, {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  } ],\n  \"autor\" : \"DJ Gandalf\",\n  \"dateOfCreation\" : \"2019-05-17T00:00:00.000+00:00\"\n}";
 
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<Playlist>(exampleJson)
-            : default(Playlist);            //TODO: Change the data returned
+            //var example = exampleJson != null
+            //? JsonConvert.DeserializeObject<Playlist>(exampleJson)
+            //: default(Playlist);            //TODO: Change the data returned
+            var example = new Object();
             return new ObjectResult(example);
         }
 

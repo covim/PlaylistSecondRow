@@ -31,6 +31,15 @@ namespace Wifi.PlaylistEditor.Items
             _path = filePath;
             ReadIdTags();
         }
+
+        public Mp3Item(string filePath, bool noFileSystem)
+        {
+            _guid = Guid.NewGuid();
+            _path = filePath;
+            //ReadIdTags();
+        }
+
+
         public string Title
         {
             get => _title;

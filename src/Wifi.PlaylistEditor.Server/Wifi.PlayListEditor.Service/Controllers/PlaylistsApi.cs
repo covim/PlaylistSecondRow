@@ -34,124 +34,97 @@ namespace Wifi.PlayListEditor.Service.Controllers
     public class PlaylistsApiController : ControllerBase
     {
         private readonly IPlaylistService _playlistService;
+        private readonly IPlaylistFactory _playlistFactory;
 
-        public PlaylistsApiController(IPlaylistService playlistService)
+        public PlaylistsApiController(IPlaylistService playlistService, IPlaylistFactory playlistFactory)
         {
             _playlistService = playlistService;
+            _playlistFactory = playlistFactory;
         }
 
-        /// <summary>
-        /// Get all existing playlists
-        /// </summary>
-        /// <remarks>Returns a list of existing playlist</remarks>
-        /// <response code="201">Playlist was successful created.</response>
-        /// <response code="404">No playlists found</response>
         [HttpGet]
         [Route("playlists")]
         [ValidateModelState]
         public async Task<IActionResult> PlaylistsGet()
         {
             var domainObjects = await _playlistService.GetAllPlaylists();
+            if (domainObjects == null)
+            {
+                return StatusCode(201, new PlaylistList());
+            }
 
-            var entity = domainObjects.ToEntity();
-                        
-            return new ObjectResult(entity);
+            var entity = domainObjects.ToRestEntity();
+
+            return StatusCode(200, entity);
         }
 
-
-        /// <summary>
-        /// Returns playlist by ID
-        /// </summary>
-        /// <remarks>Returns a single playlist</remarks>
-        /// <param name="playlistId">ID of playlist to return</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="400">Invalid ID supplied</response>
-        /// <response code="404">Playlist not found</response>
         [HttpGet]
         [Route("playlists/{playlistId}")]
         [ValidateModelState]
         public async Task<IActionResult> PlaylistsPlaylistIdGet([FromRoute][Required] string playlistId)
         {
-            var domainObject = await _playlistService.GetPlaylist(playlistId);
+            if (string.IsNullOrEmpty(playlistId))
+            {
+                return StatusCode(400);
+            }
 
-            var entity = domainObject.ToEntity();
+            var domainObject = await _playlistService.GetPlaylistById(playlistId);
+            if (domainObject == null)
+            {
+                return StatusCode(404);
+            }
 
-            return new ObjectResult(entity);
+            var entity = domainObject.ToRestEntity();
+
+            return StatusCode(200, entity);
         }
 
 
-        /// <summary>
-        /// Deletes a playlist
-        /// </summary>
-        /// <remarks>delete a playlist</remarks>
-        /// <param name="playlistId">ID of playlist to delete</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="400">Invalid playlist value</response>
-        /// <response code="404">Playlist not found</response>
         [HttpDelete]
         [Route("playlists/{playlistId}")]
         [ValidateModelState]
         public async Task<IActionResult> PlaylistsPlaylistIdDelete([FromRoute][Required] string playlistId)
         {
-            var domainObject = await _playlistService.DeletePlaylist(playlistId);  // GetPlaylist(playlistId);
-            return StatusCode(201);
+            var playlist = await _playlistService.GetPlaylistById(playlistId);
+            if (playlist == null)
+            {
+                return StatusCode(404);
+            }
+
+            await _playlistService.DeletePlaylist(playlistId);
+            return StatusCode(204);
         }
 
-        /// <summary>
-        /// Creates a new playlist with data provided in body
-        /// </summary>
-        /// <param name="body">Creates new playlist with provided data in body.</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="405">Invalid input</response>
+       
         [HttpPost]
         [Route("playlists")]
         [ValidateModelState]
-        public async Task<IActionResult> PlaylistsPost([FromBody] PlaylistPost body)
+        public async Task<IActionResult> PlaylistsPost([FromBody] PlaylistPost entity)
         {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201, default(PlaylistLink));
-
-            //TODO: Uncomment the next line to return response 405 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(405);
-
-            //var options = Options.Create(new PlaylistDbSettings
-            //{
-            //    ConnectionString = "mongodb://admin:password@localhost:27017",
-            //    DatabaseName = "playlistDb",
-            //    CollectionName = "playlists"
-            //});
-
-            var playlistFactory = new PlaylistFactory();
-            var playlistItemFactory = new PlaylistItemFactory();
-            var playlist = playlistFactory.Create(body.Name, body.Autor, DateTime.Now);
-            foreach (var item in body.Items)
+            if (entity == null)
             {
-                var path = $"{item.Filename}{item.Extension}";
-                var playlistItem = playlistItemFactory.Create(path, true);
-                playlist.Add(playlistItem); 
+                return StatusCode(405);
             }
 
-            var playlistEntity = new PlaylistEntity();
-            playlistEntity.Items = new List<PlaylistItemEntity>();
-            playlistEntity.Author = playlist.Author;
-            playlistEntity.Title = playlist.Name;
-            playlistEntity.Id = playlist.Id.ToString();
-            playlistEntity.CreatedAt = playlist.CreateAt.ToString("yyyy-MM-dd");
-            foreach (var item in playlist.ItemList)
+            var domainObject = entity.ToDomain(_playlistFactory);
+            foreach (var item in entity.Items)
             {
-                var playlistItemEntity = new PlaylistItemEntity();
-                playlistItemEntity.Id = item.Id.ToString();
-                playlistItemEntity.Path = item.Path.ToString();
-                playlistEntity.Items.Add(playlistItemEntity);
-                
+                var playlistItem = await _playlistService.GetItemById(item.Id);
+                if (playlistItem != null)
+                {
+                    domainObject.Add(playlistItem);
+                }
+                else
+                {
+                    return StatusCode(404, $"Item with id = {item.Id} not found.");
+                }
             }
 
-            await _playlistService.CreatePlaylistAsync(playlistEntity);
-            
+            await _playlistService.AddNewPlaylist(domainObject);
 
+            var playlistEnity = domainObject.ToRestEntity();
 
-            var example = new Object();
-            return new ObjectResult(example);
+            return StatusCode(201, playlistEnity);
         }
 
 
@@ -168,24 +141,32 @@ namespace Wifi.PlayListEditor.Service.Controllers
         [HttpPut]
         [Route("playlists/{playlistId}")]
         [ValidateModelState]
-        public virtual IActionResult PlaylistsPlaylistIdPut([FromBody] PlaylistUpdate body, [FromRoute][Required] string playlistId)
+        public async Task<IActionResult> PlaylistsPlaylistIdPut([FromBody] PlaylistUpdate body, [FromRoute][Required] string playlistId)
         {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201, default(Playlist));
+            var existingPlaylist = await _playlistService.GetPlaylistById(playlistId);
+            if (existingPlaylist == null || body == null)
+            {
+                return StatusCode(404);
+            }
 
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
+            var updatedPlaylist = body.ToDomain(_playlistFactory);
+            foreach (var item in body.Items)
+            {
+                var playlistItem = await _playlistService.GetItemById(item.Id);
+                if (playlistItem != null)
+                {
+                    updatedPlaylist.Add(playlistItem);
+                }
+                else
+                {
+                    return StatusCode(404, $"Item with id = {item.Id} not found.");
+                }
+            }
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
-            //string exampleJson = null;
-            //exampleJson = "{\n  \"duration\" : 680,\n  \"name\" : \"MyMegaHitsPlaylist_2022\",\n  \"id\" : \"4979875A-A40E-4CC6-99AB-CB5CE62DA97C\",\n  \"items\" : [ {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  }, {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  } ],\n  \"autor\" : \"DJ Gandalf\",\n  \"dateOfCreation\" : \"2019-05-17T00:00:00.000+00:00\"\n}";
+            await _playlistService.UpdatePlaylist(existingPlaylist, updatedPlaylist);
+            existingPlaylist = await _playlistService.GetPlaylistById(playlistId);
 
-            //var example = exampleJson != null
-            //? JsonConvert.DeserializeObject<Playlist>(exampleJson)
-            //: default(Playlist);            //TODO: Change the data returned
-            var example = new Object();
-            return new ObjectResult(example);
+            return StatusCode(201, existingPlaylist.ToRestEntity());
         }
 
 

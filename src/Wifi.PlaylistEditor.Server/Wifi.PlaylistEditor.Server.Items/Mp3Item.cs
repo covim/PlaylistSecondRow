@@ -9,6 +9,7 @@ using Wifi.PlaylistEditor.Items;
 using System.Drawing;
 using System.IO;
 using File = TagLib.File;
+using System.Security.Cryptography;
 
 namespace Wifi.PlaylistEditor.Items
 {
@@ -59,8 +60,11 @@ namespace Wifi.PlaylistEditor.Items
         }
         public string Extension => ".mp3";
         public string Description => "mp3 Music File";
-        public Guid Id => _guid;
-
+        public Guid Id
+        {
+            set { _guid = value; }
+            get => _guid;
+        }
         private void ReadIdTags()
         {
             if (string.IsNullOrEmpty(_path))

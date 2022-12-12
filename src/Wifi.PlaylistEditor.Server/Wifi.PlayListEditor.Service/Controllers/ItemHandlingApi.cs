@@ -15,6 +15,9 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Wifi.PlayListEditor.Service.Models;
 using Wifi.PlayListEditor.Service.Attributes;
+using Wifi.PlayListEditor.Service.Domain;
+using Wifi.PlaylistEditor.Types;
+using Wifi.PlayListEditor.Service.Mappings;
 
 namespace Wifi.PlayListEditor.Service.Controllers
 {
@@ -25,85 +28,90 @@ namespace Wifi.PlayListEditor.Service.Controllers
     [Route("playlistapi/v1")]
     public class ItemHandlingApiController : ControllerBase
     {
-        /// <summary>
-        /// Get all available item data from server
-        /// </summary>
-        /// <remarks>Returns all available item data from server</remarks>
-        /// <response code="200">successful operation</response>
+        private readonly IHostEnvironment _hostEnvironment;
+        private readonly IPlaylistService _playlistService;
+        private readonly IPlaylistItemFactory _playlistItemFactory;
+
+        public ItemHandlingApiController(IHostEnvironment hostEnvironment, IPlaylistService playlistService, IPlaylistItemFactory playlistItemFactory)
+        {
+            _hostEnvironment = hostEnvironment;
+            _playlistService = playlistService;
+            _playlistItemFactory = playlistItemFactory;
+        }
+        
+
         [HttpGet]
         [Route("items")]
         [ValidateModelState]
-        public virtual IActionResult ItemsGet()
+        public async Task<IActionResult> ItemsGet()
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(ItemList));
-            string exampleJson = null;
-            exampleJson = "{\n  \"items\" : [ {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  }, {\n    \"duration\" : 205,\n    \"path\" : \"data\\musik\\Bethoven.mp3\",\n    \"thumbnail\" : \"\",\n    \"extension\" : \".mp3\",\n    \"artist\" : \"Gandalf Singer\",\n    \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n    \"title\" : \"The bird song\"\n  } ]\n}";
+            IEnumerable<IPlaylistItem> items = await _playlistService.GetAllItems();
 
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<ItemList>(exampleJson)
-            : default(ItemList);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var entity = items.ToRestEntity();
+
+            return StatusCode(200, entity);
         }
 
-        /// <summary>
-        /// Deletes a playlist item from server
-        /// </summary>
-        /// <remarks>delete a playlist</remarks>
-        /// <param name="itemId">ID of playlist item to delete</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="400">Invalid item value</response>
-        /// <response code="404">Playlist item not found</response>
-        /// <response code="423">Item is locked due usage in one or more playlists</response>
         [HttpDelete]
         [Route("items/{itemId}")]
         [ValidateModelState]
-        public virtual IActionResult ItemsItemIdDelete([FromRoute][Required] string itemId)
+        public async Task<IActionResult> ItemsItemIdDelete([FromRoute][Required] string itemId)
         {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201);
+            var item = await _playlistService.GetItemById(itemId);
+            if (item == null)
+            {
+                return StatusCode(404);
+            }
 
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
+            if (System.IO.File.Exists(item.Path))
+            {
+                System.IO.File.Delete(item.Path);
+            }
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
+            await _playlistService.DeleteItem(itemId);
 
-            //TODO: Uncomment the next line to return response 423 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(423);
-
-            throw new NotImplementedException();
+            return StatusCode(204);
         }
 
-        /// <summary>
-        /// Returns item by ID
-        /// </summary>
-        /// <remarks>Returns a single item data</remarks>
-        /// <param name="itemId">ID of item to return</param>
-        /// <response code="201">successful operation</response>
-        /// <response code="400">Invalid ID supplied</response>
-        /// <response code="404">Playlist not found</response>
+        
         [HttpGet]
         [Route("items/{itemId}")]
         [ValidateModelState]
-        public virtual IActionResult ItemsItemIdGet([FromRoute][Required] string itemId)
+        public async Task<IActionResult> ItemsItemIdGet([FromRoute][Required] string itemId)
         {
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201, default(PlaylistItem));
+            var item = await _playlistService.GetItemById(itemId);
 
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
+            if (item == null)
+            {
+                return StatusCode(404);
+            }
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
-            string exampleJson = null;
-            exampleJson = "{\n  \"duration\" : 205,\n  \"path\" : \"data\\musik\\Bethoven.mp3\",\n  \"thumbnail\" : \"\",\n  \"extension\" : \".mp3\",\n  \"artist\" : \"Gandalf Singer\",\n  \"id\" : \"4979875A-123E-4346-CCAB-CB5CE62DA97C\",\n  \"title\" : \"The bird song\"\n}";
-
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<PlaylistItem>(exampleJson)
-            : default(PlaylistItem);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var entity = item.ToRestEntity();
+            return StatusCode(200, entity);
         }
 
+        [HttpPost]
+        [Route("items")]
+        [ValidateModelState]
+        public async Task<IActionResult> Post([FromForm] string filename, [FromForm] string extension, [FromForm] IFormFile file)
+        {
+            string uploads = Path.Combine(_hostEnvironment.ContentRootPath, "uploads");
+            if (!Directory.Exists(uploads))
+            {
+                Directory.CreateDirectory(uploads);
+            }
+            string filePath = Path.Combine(uploads, file.FileName);
+
+            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyToAsync(fileStream).Wait();
+            }
+
+            var domainItem = _playlistItemFactory.Create(filePath);
+            await _playlistService.AddItem(domainItem);
+
+            var path = $"{Request.HttpContext.Request.Scheme}://{Request.HttpContext.Request.Host}{Request.HttpContext.Request.Path}/{domainItem.Id}";
+            return StatusCode(201, new Models.ItemLink { Href = path });
+        }
     }
 }

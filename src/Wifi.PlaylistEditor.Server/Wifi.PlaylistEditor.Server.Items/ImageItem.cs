@@ -36,7 +36,11 @@ namespace Wifi.PlaylistEditor.Items
         public TimeSpan Duration { get; set; }
         public string Extension => ".jpg";
         public string Description => "JPG Image File";
-        public Guid Id => _id;
+        public Guid Id
+        {
+            set { _id = value; }
+            get => _id;
+        }
 
         private void ReadImageTags()
         {

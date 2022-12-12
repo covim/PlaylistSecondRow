@@ -10,7 +10,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
     [TestFixture]
     public class MongoDbRepositoryTests
     {
-        private IDatabaseRepository<PlaylistEntity> _fixture;
+        private IDatabaseRepository<PlaylistEntity, PlaylistItemEntity> _fixture;
 
         [SetUp]
         public void Setup()
@@ -19,7 +19,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
             {
                 ConnectionString = "mongodb://admin:password@localhost:27017",
                 DatabaseName = "playlistDb",
-                CollectionName = "playlists"
+                PlaylistCollectionName = "playlists"
             });
 
             _fixture = new MongoDbRepository(options);
@@ -32,7 +32,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
             var playlists = _fixture.GetAsync().Result;
             foreach (PlaylistEntity playlist in playlists)
             {
-                _fixture.RemoveAsync(playlist.Id).Wait();
+                _fixture.RemovePlaylistAsync(playlist.Id).Wait();
                 for (int i = 0; i < 20; i++)
                 {
 
@@ -359,7 +359,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
 
             //act
             
-            await _fixture.RemoveAsync(entity2.Id);
+            await _fixture.RemovePlaylistAsync(entity2.Id);
 
             var playlistItemsFromDb = new List<PlaylistEntity>();
             playlistItemsFromDb = await _fixture.GetAsync();
@@ -425,7 +425,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
 
             //act
 
-            await _fixture.RemoveAsync(fakeid);
+            await _fixture.RemovePlaylistAsync(fakeid);
 
             var playlistItemsFromDb = new List<PlaylistEntity>();
             playlistItemsFromDb = await _fixture.GetAsync();
@@ -491,7 +491,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.Test
 
             //act
 
-            await _fixture.RemoveAsync(fakeid);
+            await _fixture.RemovePlaylistAsync(fakeid);
 
             var playlistItemsFromDb = new List<PlaylistEntity>();
             playlistItemsFromDb = await _fixture.GetAsync();

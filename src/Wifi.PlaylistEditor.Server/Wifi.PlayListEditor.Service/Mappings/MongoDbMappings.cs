@@ -7,6 +7,15 @@ namespace Wifi.PlayListEditor.Service.Mappings
 {
     public static class MongoDbMappings
     {
+        public static PlaylistItemEntity ToEntity(this IPlaylistItem playlistItem)
+        {
+            return new PlaylistItemEntity
+            {
+                Id = playlistItem.Id.ToString(),
+                Path = playlistItem.Path,
+            };
+        }
+        
         public static IEnumerable<IPlaylist> ToDomain(this IEnumerable<PlaylistEntity> entities,
                                                       IPlaylistFactory playlistFactory,
                                                       IPlaylistItemFactory playlistItemFactory)
@@ -25,6 +34,18 @@ namespace Wifi.PlayListEditor.Service.Mappings
                                           entity.Author,
                                           entity.Title,
                                           DateTime.ParseExact(entity.CreatedAt, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+        }
+
+        public static PlaylistEntity ToEntity(this IPlaylist playlist)
+        {
+            return new PlaylistEntity
+            {
+                Id = playlist.Id.ToString(),
+                Author = playlist.Author,
+                Title = playlist.Name,
+                CreatedAt = playlist.CreateAt.ToString("yyyy-MM-dd"),
+                Items = playlist.ItemList.Select(x => x.ToEntity())
+            };
         }
 
 

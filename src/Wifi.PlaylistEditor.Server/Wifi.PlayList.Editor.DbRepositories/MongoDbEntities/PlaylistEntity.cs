@@ -20,7 +20,7 @@ namespace Wifi.PlayList.Editor.DbRepositories.MongoDbEntities
         public string CreatedAt { get; set; }
 
         [BsonElement("items")]
-        public List<PlaylistItemEntity> Items { get; set; }
+        public IEnumerable<PlaylistItemEntity> Items { get; set; }
 
     }
 }

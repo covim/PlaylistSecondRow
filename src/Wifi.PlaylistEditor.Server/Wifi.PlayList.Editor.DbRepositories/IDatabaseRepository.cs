@@ -3,7 +3,7 @@ using Wifi.PlayList.Editor.DbRepositories.MongoDbEntities;
 
 namespace Wifi.PlayList.Editor.DbRepositories
 {
-    public interface IDatabaseRepository<T>
+    public interface IDatabaseRepository<T, TItem>
     {
         /// <summary>
         /// Defines CRUD (Create, Read, Update, Delete) methods for a Database repository
@@ -17,9 +17,13 @@ namespace Wifi.PlayList.Editor.DbRepositories
 
         Task UpdateAsync(string id, T updatedPlayist);
 
-        Task RemoveAsync(string id);
+        Task CreateItemAsync(TItem newPlaylistItem);
 
+        Task RemovePlaylistAsync(string id);
 
+        Task<List<PlaylistItemEntity>> GetItemsAsync();
+
+        Task RemoveItemAsync(string itemId);
 
     }
 }

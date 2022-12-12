@@ -5,9 +5,16 @@ namespace Wifi.PlayListEditor.Service.Domain
 {
     public interface IPlaylistService
     {
+        Task AddNewPlaylist(IPlaylist newPlaylist);
         Task<IEnumerable<IPlaylist>> GetAllPlaylists();
-        Task <IPlaylist> GetPlaylist(string id);
-        Task<Object> DeletePlaylist(string id);
-        Task<Object> CreatePlaylistAsync(PlaylistEntity playlistEntity);
+        Task <IPlaylist> GetPlaylistById(string playlistId);
+        Task DeletePlaylist(string playlistId);
+        Task UpdatePlaylist(IPlaylist existingPlaylist, IPlaylist updatedPlaylist);
+
+
+        Task AddItem(IPlaylistItem newItem);
+        Task<IPlaylistItem> GetItemById(string id);
+        Task<IEnumerable<IPlaylistItem>> GetAllItems();
+        Task DeleteItem(string itemId);
     }
 }

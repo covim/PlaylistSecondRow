@@ -1,8 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Wifi.PlayList.Editor.Factories;
 using Wifi.PlayListEditor.Types;
-
+using Wifi.PlayListEditor.UI.RestModels;
 
 namespace Wifi.PlayListEditor.UI
 {
@@ -59,6 +66,31 @@ namespace Wifi.PlayListEditor.UI
                 imageList1.Images.Add(image);
 
 
+
+                index++;
+
+            }
+
+            lst_itemView.LargeImageList = imageList1;
+        }
+
+        private void UpdatePlaylistItemView(PlaylistList playlistList)
+        {
+            int index = 0;
+
+            lst_itemView.Items.Clear();
+            imageList1.Images.Clear();
+
+            foreach (var playlistItem in playlistList.Playlists)
+            {
+                var listViewItem = new ListViewItem(playlistItem.Name);
+                listViewItem.Tag = playlistItem; //ablage für die Referenz auf das original
+                listViewItem.ImageIndex = index;
+
+                lst_itemView.Items.Add(listViewItem);
+
+                var image =  Resource1.noImageAvailable;
+                imageList1.Images.Add(image);
 
                 index++;
 
@@ -254,5 +286,90 @@ namespace Wifi.PlayListEditor.UI
             }
         }
 
+        private HttpClient _client;
+        private HttpClient InitClient()
+        {            
+            if (_client == null)
+            {
+                HttpClient client= new HttpClient();
+                client.BaseAddress = new Uri("http://localhost:49153/playlistapi/v1/"); // gehört in eine Settings Datei
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                return client;
+            }
+            return _client;
+        }
+
+        private async void getAllPlaylistsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _client = InitClient();
+
+            HttpResponseMessage response = await _client.GetAsync("playlists");
+            if (response.IsSuccessStatusCode)
+            {
+                var playlistsJson = await response.Content.ReadAsStringAsync();
+                var playlists = JsonConvert.DeserializeObject<PlaylistList>(playlistsJson);
+
+                UpdatePlaylistItemView(playlists);
+            }
+
+
+
+        }
+
+        private async void lst_itemView_DoubleClick(object sender, EventArgs e)
+        {
+            if(lst_itemView.SelectedItems.Count != 1) 
+            {
+                return;
+            }
+
+            if (lst_itemView.SelectedItems[0].Tag is PlaylistInfo playlistInfo)
+            {
+                _playlist = await GetPlaylistFromServer(playlistInfo.Id);
+                
+                UpdatePlaylistItemView();
+                UpdatePlaylistInfoView();
+            }
+        }
+
+        private async Task<IPlaylist> GetPlaylistFromServer(string id)
+        {
+            _client = InitClient();
+
+            HttpResponseMessage response = await _client.GetAsync($"playlists/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var playlistJson = await response.Content.ReadAsStringAsync();
+                var playlistEntity = JsonConvert.DeserializeObject<RestModels.Playlist>(playlistJson);
+
+                IPlaylist playlist = ConvertToDomain(playlistEntity);
+
+                return playlist;
+            }
+            return null;
+        }
+
+        private IPlaylist ConvertToDomain(RestModels.Playlist playlistEntity)
+        {
+            if (playlistEntity == null) { return null; }
+
+            var playlist = _playlistFactory.Create(playlistEntity.Name, playlistEntity.Autor, playlistEntity.DateOfCreation);
+            
+            foreach (var item in playlistEntity.Items)
+            {
+                var domainItem = new DummyItem(TimeSpan.FromSeconds((double)item.Duration), item.Path)
+                {
+                    Artist = item.Artist,
+                    Title = item.Title,
+                    Thumbnail = item.Thumbnail != null ? Image.FromStream(new MemoryStream(item.Thumbnail)) : Resource1.noImageAvailable,
+                };
+
+                playlist.Add(domainItem);
+            }
+            return playlist;
+        }
     }
 }

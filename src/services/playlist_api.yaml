@@ -135,8 +135,6 @@ paths:
         '405':
           description: Invalid input    
 
-    
-
   /items/{itemId}:
     get:
       tags:
@@ -162,6 +160,7 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Playlist not found    
+          
     delete:
       tags:
         - item-handling
@@ -363,15 +362,7 @@ components:
           type: string
           format: string
           description: The id of the item to Updates
-          example: 4979875A-A40E-4CC6-99AB-CB5CE62DA97C  
-        filename:
-          type: string
-          format: string
-          example: Bethoven_song
-        extension:
-          type: string
-          format: string
-          example: .mp3                
+          example: 4979875A-A40E-4CC6-99AB-CB5CE62DA97C                   
       required:
         - id         
 
@@ -452,11 +443,11 @@ components:
         title:
           type: string
           format: string
-          example: "Neuer PlaylistTitel"
+          example: "Neuer PlaylistTitel"         
         author:
           type: string
           format: string
-          example: "DJ new Author"
+          example: "DJ New Author"
         items: 
           type: array
           items:
